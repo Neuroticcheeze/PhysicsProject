@@ -16,6 +16,9 @@
     <Filter Include="Source Files\Physics">
       <UniqueIdentifier>{c466a159-97ba-4287-a274-873c2c1670e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\PhysX">
+      <UniqueIdentifier>{9502d71d-2e4e-426b-96b6-c3da714bb2c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\BaseApplication.cpp">
@@ -50,6 +53,9 @@
     </ClCompile>
     <ClCompile Include="src\PhysXApplication.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PhysX.cpp">
+      <Filter>Source Files\PhysX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +94,9 @@
     </ClInclude>
     <ClInclude Include="src\PhysXApplication.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PhysX.h">
+      <Filter>Source Files\PhysX</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

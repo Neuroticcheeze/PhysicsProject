@@ -20,6 +20,7 @@
     <ClCompile Include="src\Physics\PhysicsObject.cpp" />
     <ClCompile Include="src\Physics\PhysicsScene.cpp" />
     <ClCompile Include="src\Physics\PhysicsSceneRenderer.cpp" />
+    <ClCompile Include="src\PhysX.cpp" />
     <ClCompile Include="src\PhysXApplication.cpp" />
     <ClCompile Include="src\TestApplication.cpp" />
   </ItemGroup>
@@ -34,6 +35,7 @@
     <ClInclude Include="src\Physics\PhysicsSceneRenderer.h" />
     <ClInclude Include="src\Physics\PlaneCollider.h" />
     <ClInclude Include="src\Physics\SphereCollider.h" />
+    <ClInclude Include="src\PhysX.h" />
     <ClInclude Include="src\PhysXApplication.h" />
     <ClInclude Include="src\TestApplication.h" />
   </ItemGroup>
