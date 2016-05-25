@@ -41,6 +41,8 @@ bool PhysXApplication::startup()
 	//////////////////////////////////////////////////////////////////////////
 	m_psys = new MyPhysX::PhysXSystem;
 
+	m_psys->AddMaterial("box", 0.5F, 0.2F, 0.2F);
+
 	return true;
 }
 
@@ -69,16 +71,6 @@ bool PhysXApplication::update(float deltaTime)
 	// update the camera's movement
 	m_camera->update(deltaTime);
 
-	static float t = 0;
-	t += deltaTime;
-
-	if (t > 1.0F)
-	{
-		m_psys->Add();
-		t = 0.0F;
-	}
-
-
 	// clear the gizmos out for this frame
 	Gizmos::clear();
 
@@ -86,6 +78,27 @@ bool PhysXApplication::update(float deltaTime)
 	// YOUR UPDATE CODE HERE
 	//////////////////////////////////////////////////////////////////////////
 	m_psys->Update(deltaTime);
+
+	static float t = 0;
+	t += deltaTime;
+
+	if (t > 2.0F)
+	{
+		m_psys->Add("box", glm::linearRand(10, 1000), physx::PxBoxGeometry(glm::linearRand(0.5F, 3.0F), glm::linearRand(0.5F, 3.0F), glm::linearRand(0.5F, 3.0F)),
+			physx::PxVec3(0, 10, 0),
+			physx::PxQuat(glm::radians(45.0F), physx::PxVec3(0, 1, 0)));
+		t = 0.0F;
+	}
+
+	else if (t > 1.0F && t < 1.01F)
+	{
+		m_psys->Add("box", glm::linearRand(10, 1000), physx::PxSphereGeometry(glm::linearRand(0.5F, 3.0F)),
+			physx::PxVec3(0, 10, 0),
+			physx::PxQuat(glm::radians(45.0F), physx::PxVec3(0, 1, 0)));
+	}
+
+	if (glfwGetKey(m_window, GLFW_KEY_C) == GLFW_PRESS)
+		m_psys->Clear();
 
 	// return true, else the application closes
 	return true;

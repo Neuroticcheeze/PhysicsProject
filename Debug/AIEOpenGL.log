@@ -1,13 +1,4 @@
-﻿glfw3.lib(context.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(context.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
-glfw3.lib(init.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(init.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
-glfw3.lib(input.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(input.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
-glfw3.lib(monitor.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(monitor.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
-glfw3.lib(window.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(window.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
-glfw3.lib(win32_init.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_init.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
-glfw3.lib(win32_monitor.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_monitor.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
-glfw3.lib(win32_time.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_time.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
-glfw3.lib(win32_tls.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_tls.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
-glfw3.lib(win32_window.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_window.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
-glfw3.lib(winmm_joystick.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(winmm_joystick.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
-glfw3.lib(wgl_context.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(wgl_context.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
+﻿  PhysXApplication.cpp
+c:\users\jesse.farag\desktop\physicsproject\src\physxapplication.cpp(89): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+c:\users\jesse.farag\desktop\physicsproject\src\physxapplication.cpp(97): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
   AIEOpenGL.vcxproj -> C:\Users\jesse.farag\Desktop\PhysicsProject\bin\AIEOpenGL_d.exe
