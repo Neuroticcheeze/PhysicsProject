@@ -35,22 +35,34 @@ void Camera::update(float deltaTime)
 {
 	GLFWwindow* window = glfwGetCurrentContext();
 
-	float frameSpeed = glfwGetKey(window,GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? deltaTime * m_speed * 2 : deltaTime * m_speed;	
+	static double
+		mouseConserve = 0.575,
+		moveConserve = 0.75;
+
+	float frameSpeed = glfwGetKey(window,GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS ? deltaTime * m_speed * 4 : deltaTime * m_speed;	
+
+	static float f0 = 0, f1 = 0, f2 = 0;
 
 	// translate
 	if (glfwGetKey(window,'W') == GLFW_PRESS)
-		m_transform[3] -= m_transform[2] * frameSpeed;
+		f2 -= frameSpeed;
 	if (glfwGetKey(window,'S') == GLFW_PRESS)
-		m_transform[3] += m_transform[2] * frameSpeed;
+		f2 += frameSpeed;
 	if (glfwGetKey(window,'D') == GLFW_PRESS)
-		m_transform[3] += m_transform[0] * frameSpeed;
+		f0 += frameSpeed;
 	if (glfwGetKey(window,'A') == GLFW_PRESS)
-		m_transform[3] -= m_transform[0] * frameSpeed;
+		f0 -= frameSpeed;
 	if (glfwGetKey(window,'Q') == GLFW_PRESS)
-		m_transform[3] += m_transform[1] * frameSpeed;
+		f1 += frameSpeed;
 	if (glfwGetKey(window,'E') == GLFW_PRESS)
-		m_transform[3] -= m_transform[1] * frameSpeed;
-	
+		f1 -= frameSpeed;
+
+
+
+	m_transform[3] += m_transform[0] * (f0 *= static_cast<float>(moveConserve));
+	m_transform[3] += m_transform[1] * (f1 *= static_cast<float>(moveConserve));
+	m_transform[3] += m_transform[2] * (f2 *= static_cast<float>(moveConserve));
+
 	// check for rotation
 	static bool sbMouseButtonDown = false;
 	if (glfwGetMouseButton(window,GLFW_MOUSE_BUTTON_2) == GLFW_PRESS)
@@ -74,24 +86,30 @@ void Camera::update(float deltaTime)
 		siPrevMouseY = mouseY;
 
 		glm::mat4 mMat;
+
+		static double accelX, accelY;		
 		
 		// pitch
 		if (iDeltaY != 0)
 		{
-			mMat = glm::axisAngleMatrix(m_transform[0].xyz(), (float)-iDeltaY / 150.0f);
-			m_transform[0] = mMat * m_transform[0];
-			m_transform[1] = mMat * m_transform[1];
-			m_transform[2] = mMat * m_transform[2];
+			accelY += iDeltaY;
 		}
 
 		// yaw
 		if (iDeltaX != 0)
 		{
-			mMat = glm::axisAngleMatrix( m_up, (float)-iDeltaX / 150.0f );
-			m_transform[0] = mMat * m_transform[0];
-			m_transform[1] = mMat * m_transform[1];
-			m_transform[2] = mMat * m_transform[2];
+			accelX += iDeltaX;
 		}
+
+		mMat = glm::axisAngleMatrix(m_transform[0].xyz(), (float)-(accelY *= mouseConserve) / 150.0f);
+		m_transform[0] = mMat * m_transform[0];
+		m_transform[1] = mMat * m_transform[1];
+		m_transform[2] = mMat * m_transform[2];
+
+		mMat = glm::axisAngleMatrix(m_up, (float)-(accelX *= mouseConserve) / 150.0f);
+		m_transform[0] = mMat * m_transform[0];
+		m_transform[1] = mMat * m_transform[1];
+		m_transform[2] = mMat * m_transform[2];
 	}
 	else
 	{
@@ -130,4 +148,45 @@ glm::vec3 Camera::pickAgainstPlane(float x, float y, const glm::vec4& plane) con
 	float d = (plane.w - glm::dot(m_transform[3].xyz(), plane.xyz()) / glm::dot(dir, plane.xyz()));
 
 	return m_transform[3].xyz() + dir * d;
+}
+
+void Camera::getFrustumPlanes(glm::vec4* planes) {
+
+	auto transform = getProjectionView();
+
+	// right side
+	planes[0] = glm::vec4(transform[0][3] - transform[0][0],
+		transform[1][3] - transform[1][0],
+		transform[2][3] - transform[2][0],
+		transform[3][3] - transform[3][0]);
+	// left side
+	planes[1] = glm::vec4(transform[0][3] + transform[0][0],
+		transform[1][3] + transform[1][0],
+		transform[2][3] + transform[2][0],
+		transform[3][3] + transform[3][0]);
+	// top
+	planes[2] = glm::vec4(transform[0][3] - transform[0][1],
+		transform[1][3] - transform[1][1],
+		transform[2][3] - transform[2][1],
+		transform[3][3] - transform[3][1]);
+	// bottom
+	planes[3] = glm::vec4(transform[0][3] + transform[0][1],
+		transform[1][3] + transform[1][1],
+		transform[2][3] + transform[2][1],
+		transform[3][3] + transform[3][1]);
+	// far
+	planes[4] = glm::vec4(transform[0][3] - transform[0][2],
+		transform[1][3] - transform[1][2],
+		transform[2][3] - transform[2][2],
+		transform[3][3] - transform[3][2]);
+	// near
+	planes[5] = glm::vec4(transform[0][3] + transform[0][2],
+		transform[1][3] + transform[1][2],
+		transform[2][3] + transform[2][2],
+		transform[3][3] + transform[3][2]);
+	// plane normalisation, based on length of normal
+	for (int i = 0; i < 6; i++) {
+		float d = glm::length(glm::vec3(planes[i]));
+		planes[i] /= d;
+	}
 }

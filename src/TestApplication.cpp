@@ -84,11 +84,14 @@ bool TestApplication::update(float deltaTime)
 
 	if (glfwGetKey(m_window, GLFW_KEY_G) == GLFW_PRESS)
 	{
+		const float density = 0.05F;
+
+		float r = glm::linearRand(1.0F, 5.0F);
 		Physics::IPhysicsObject *obj = m_physicsScene->CreatePhysicsObject<Physics::IPhysicsObject>();
-		obj->SetCollider(new Physics::SphereCollider(glm::linearRand(0.25F, 5.0F)));
-		obj->SetMass(0.1F);
+		obj->SetCollider(new Physics::SphereCollider(r));
+		obj->SetMass(r * density);
 		m_physicsSceneRenderer->GetRenderInfo(obj).m_colour = vec4(glm::ballRand(0.5F) + 0.5F, 1);
-		obj->SetPosition(glm::ballRand(5.0F) + vec3(0, 26, 0));
+		obj->SetPosition(glm::ballRand(5.0F) + vec3(0, 100, 0));
 	}
 
 	static bool leftMouseClick = false, leftMouseClickPrev = false;
@@ -97,10 +100,13 @@ bool TestApplication::update(float deltaTime)
 	
 	if (leftMouseClick && !leftMouseClickPrev)
 	{
+		const float density = 0.05F;
+
+		float r = glm::linearRand(1.0F, 5.0F);
 		Physics::IPhysicsObject *obj = m_physicsScene->CreatePhysicsObject<Physics::IPhysicsObject>();
-		obj->SetCollider(new Physics::SphereCollider(glm::linearRand(0.25F, 5.0F)));
-		obj->SetMass(0.1F);
-		obj->SetVelocity(vec3(-forwardVec) * 150.0F);
+		obj->SetCollider(new Physics::SphereCollider(r));
+		obj->SetMass(r * density);
+		obj->SetVelocity(vec3(-forwardVec) * 150.0F + glm::ballRand(20.0F));
 		m_physicsSceneRenderer->GetRenderInfo(obj).m_colour = vec4(glm::ballRand(0.5F) + 0.5F, 1);
 		obj->SetPosition(vec3(positionVec));
 	}
@@ -139,7 +145,7 @@ void TestApplication::draw() {
 			i == 10 ? vec4(1, 1, 1, 1) : vec4(0, 0, 0, 1));
 	}
 
-	m_physicsSceneRenderer->Render(m_physicsScene);
+	m_physicsSceneRenderer->Render(m_physicsScene, m_camera);
 
 	// display the 3D gizmos
 	Gizmos::draw(m_camera->getProjectionView());

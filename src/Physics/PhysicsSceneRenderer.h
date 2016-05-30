@@ -5,6 +5,8 @@
 
 using glm::vec4;
 
+class Camera;
+
 namespace Physics
 {
 	class PhysicsScene;
@@ -23,7 +25,7 @@ namespace Physics
 		PhysicsSceneRenderer();
 		virtual ~PhysicsSceneRenderer();
 
-		void Render(PhysicsScene *p_scene);
+		void Render(PhysicsScene *p_scene, Camera *p_camera);
 
 		RenderInfo &GetRenderInfo(IPhysicsObject *p_obj);
 

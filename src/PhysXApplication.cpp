@@ -27,7 +27,7 @@ bool PhysXApplication::startup()
 {
 
 	// create a basic window
-	createWindow("AIE OpenGL Application", 1280, 720);
+	createWindow("Physics Demonstration", 1280, 720);
 
 	// start the gizmo system that can draw basic shapes
 	Gizmos::create();

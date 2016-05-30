@@ -5,7 +5,8 @@
 using namespace Physics;
 
 IPhysicsObject::IPhysicsObject() :
-	m_collider(nullptr)
+	m_collider(nullptr),
+	m_awake(false)
 {
 	SetMass(1.0F);
 	SetBounciness(0.5F);

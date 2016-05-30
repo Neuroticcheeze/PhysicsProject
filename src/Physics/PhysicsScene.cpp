@@ -22,6 +22,10 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 	{
 		IPhysicsObject *obj = (*iter);
 
+
+		//Use as a previous position so that tthe delta can be calculated later on.
+		obj->SetPositionDelta(obj->GetPosition());
+
 		obj->ApplyForce(m_gravity);
 
 		obj->Update(p_deltaTime);
@@ -45,16 +49,24 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 				obj->SetVelocity(vec3(vel.x, -vel.y * obj->GetBounciness(), vel.z));
 			}
 		}
-
-		//-----------------------------------------
-
-		if (!anObjIsMoving && obj->GetVelocity().length() > 0.001F) anObjIsMoving = true;
 	}
 
-	if (anObjIsMoving)
+	DetectCollisions();
+	ResolveCollisions();
+
+	for (auto iter = m_physicsObjects.begin(); iter != m_physicsObjects.end(); ++iter)
 	{
-		DetectCollisions();
-		ResolveCollisions();
+		IPhysicsObject *obj = (*iter);
+
+		if (glm::distance(obj->GetPosition(), obj->GetPositionDelta()) < 0.01)
+		{
+			obj->Sleep();
+		}
+
+		else
+		{
+			obj->Wake();
+		}
 	}
 }
 
@@ -79,6 +91,9 @@ void PhysicsScene::DetectCollisions()
 		for (auto iter1 = iter0 + 1; iter1 != m_physicsObjects.end(); ++iter1)
 		{
 			CollisionInfo cinfo;
+
+			if (!(*iter0)->GetIsAwake() && !(*iter1)->GetIsAwake())
+				continue;
 
 			if ((*iter0)->GetCollider()->Intersects((*iter1)->GetCollider(), &cinfo.m_intersectInfo))
 			{
