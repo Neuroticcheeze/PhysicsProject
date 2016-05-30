@@ -1,9 +1,12 @@
 #include "PhysicsScene.h"
-#include "PhysicsObject.h"
+#include "IPhysicsObject.h"
+#include "IConstraint.h"
 
 #include "SphereCollider.h"
 
 #include "Collider.h"
+
+#include <algorithm>
 
 using namespace Physics;
 
@@ -22,33 +25,47 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 	{
 		IPhysicsObject *obj = (*iter);
 
-
 		//Use as a previous position so that tthe delta can be calculated later on.
 		obj->SetPositionDelta(obj->GetPosition());
+	}
 
-		obj->ApplyForce(m_gravity);
+	for (auto iter = m_constraints.begin(); iter != m_constraints.end(); ++iter)
+	{
+		IConstraint *con = (*iter);
+
+		if (!con->Destroyed())
+		{
+			con->Contstrain(this);
+		}
+	}
+
+	for (auto iter = m_physicsObjects.begin(); iter != m_physicsObjects.end(); ++iter)
+	{
+		IPhysicsObject *obj = (*iter);
+
+		obj->ApplyForce(m_gravity * obj->GetMass());
 
 		obj->Update(p_deltaTime);
 
-		//-----------Temporary collision-----------
+		////-----------Temporary collision-----------
 
-		const Collider * col = obj->GetCollider();
-		const vec3 & pos = obj->GetPosition();
-		const vec3 & vel = obj->GetVelocity();
+		//const Collider * col = obj->GetCollider();
+		//const vec3 & pos = obj->GetPosition();
+		//const vec3 & vel = obj->GetVelocity();
 
-		if (col != nullptr && col->GetType() == Collider::Type::SPHERE)
-		{
-			float k = ((SphereCollider*)col)->GetRadius();
+		//if (col != nullptr && col->GetType() == Collider::Type::SPHERE)
+		//{
+		//	float k = ((SphereCollider*)col)->GetRadius();
 
-			if (pos.y < k)//On the ground
-			{
+		//	if (pos.y < k)//On the ground
+		//	{
 
-				obj->ApplyForce(-obj->GetVelocity() * obj->GetDampening());
+		//		obj->ApplyForce(-obj->GetVelocity() * obj->GetDampening());
 
-				obj->SetPosition(vec3(pos.x, k, pos.z));
-				obj->SetVelocity(vec3(vel.x, -vel.y * obj->GetBounciness(), vel.z));
-			}
-		}
+		//		obj->SetPosition(vec3(pos.x, k, pos.z));
+		//		obj->SetVelocity(vec3(vel.x, -vel.y * obj->GetBounciness(), vel.z));
+		//	}
+		//}
 	}
 
 	DetectCollisions();
@@ -58,7 +75,7 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 	{
 		IPhysicsObject *obj = (*iter);
 
-		if (glm::distance(obj->GetPosition(), obj->GetPositionDelta()) < 0.01)
+		if (glm::distance(obj->GetPosition(), obj->GetPositionDelta()) < 0.001F)
 		{
 			obj->Sleep();
 		}
@@ -68,6 +85,32 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 			obj->Wake();
 		}
 	}
+
+	//Delete any destroyed constraints.
+	m_constraints.erase(std::remove_if(m_constraints.begin(), m_constraints.end(),
+		[](IConstraint * p_constraint)
+	{
+		bool destroyed = p_constraint->Destroyed();
+
+		if (destroyed)
+			delete p_constraint;
+
+		return destroyed;
+	}
+	), m_constraints.end());
+
+	//Delete any destroyed game objects.
+	m_physicsObjects.erase(std::remove_if(m_physicsObjects.begin(), m_physicsObjects.end(),
+		[](IPhysicsObject * p_object)
+	{
+		bool destroyed = p_object->Destroyed();
+
+		if (destroyed)
+			delete p_object;
+
+		return destroyed;
+	}
+	), m_physicsObjects.end());
 }
 
 void PhysicsScene::DestroyPhysicsObject(IPhysicsObject *p_physicsObject)
@@ -79,7 +122,29 @@ void PhysicsScene::DestroyPhysicsObject(IPhysicsObject *p_physicsObject)
 		m_physicsObjects.erase(iter);
 	}
 
+	for (auto iter = m_constraints.begin(); iter != m_constraints.end(); ++iter)
+	{
+		IConstraint *con = (*iter);
+
+		if (con->GetObject1() == p_physicsObject || con->GetObject2() == p_physicsObject)
+		{
+			DestroyConstraint(con);
+		}
+	}
+
 	delete p_physicsObject;
+}
+
+void PhysicsScene::DestroyConstraint(IConstraint *p_constraint)
+{
+	auto iter = std::find(m_constraints.begin(), m_constraints.end(), p_constraint);
+
+	if (iter != m_constraints.end())
+	{
+		m_constraints.erase(iter);
+	}
+
+	delete p_constraint;
 }
 
 void PhysicsScene::DetectCollisions()
@@ -129,6 +194,9 @@ void PhysicsScene::ResolveCollisions()
 
 		vec3 impulse = impulseLen * collideNormal;
 
+		if (!obj1->GetIsStatic()) obj1->SetPosition()
+			if (!obj2->GetIsStatic())
+		
 		obj1->SetVelocity(obj1->GetVelocity() - obj1->GetInverseMass() * impulse);
 		obj2->SetVelocity(obj2->GetVelocity() + obj2->GetInverseMass() * impulse);
 	}

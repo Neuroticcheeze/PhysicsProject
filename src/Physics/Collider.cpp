@@ -5,6 +5,9 @@
 
 #include <glm\ext.hpp>
 
+#include <glm\vec4.hpp>
+using glm::vec4;
+
 using namespace Physics;
 
 bool Collider::Intersects(Collider * p_other, IntersectInfo * p_iinfo)
@@ -23,7 +26,7 @@ bool Collider::Intersects(Collider * p_other, IntersectInfo * p_iinfo)
 
 		else if (p_other->GetType() == Type::PLANE)
 		{
-			SphereToPlaneIntersect((SphereCollider*)this, (PlaneCollider*)p_other, p_iinfo);
+			return SphereToPlaneIntersect((SphereCollider*)this, (PlaneCollider*)p_other, p_iinfo);
 		}
 	}
 
@@ -49,7 +52,7 @@ bool Collider::Intersects(Collider * p_other, IntersectInfo * p_iinfo)
 	{
 		if (p_other->GetType() == Type::SPHERE)
 		{
-			SphereToPlaneIntersect((SphereCollider*)p_other, (PlaneCollider*)this, p_iinfo);
+			return SphereToPlaneIntersect((SphereCollider*)p_other, (PlaneCollider*)this, p_iinfo);
 		}
 
 		else if (p_other->GetType() == Type::AABB)
@@ -89,16 +92,18 @@ bool Collider::SphereToSphereIntersect(SphereCollider *p_col1, SphereCollider *p
 
 bool Collider::SphereToPlaneIntersect(SphereCollider *p_col1, PlaneCollider *p_col2, IntersectInfo *iinfo)
 {
-	p_col1->SetPosition(vec3(p_col1->GetPosition().x, 0, p_col1->GetPosition().z));
+	vec4 plane(0, -1, 0, 0);
 
-	return true;
+	vec3 planeNormal = vec3(plane);
 
-	if (p_col1->GetPosition().y < 0.0F)
+	float d = glm::abs(glm::dot(planeNormal, p_col1->GetPosition()) + plane.w);
+
+	if (d < p_col1->GetRadius())
 	{
 		// Intersecting
 		if (iinfo != nullptr)
 		{
-			iinfo->m_collisionVec = vec3(-9999);
+			iinfo->m_collisionVec = planeNormal * (p_col1->GetRadius() - d);
 		}
 
 		return true;

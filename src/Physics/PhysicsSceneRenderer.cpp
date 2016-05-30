@@ -1,6 +1,7 @@
 #include "PhysicsSceneRenderer.h"
 #include "PhysicsScene.h"
-#include "PhysicsObject.h"
+#include "IPhysicsObject.h"
+#include "IConstraint.h"
 #include "../Gizmos.h"
 #include <glm/vec4.hpp>
 
@@ -32,10 +33,9 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 	vec4 planes[6];
 	p_camera->getFrustumPlanes(planes);
 
-	auto & objects = p_scene->GetPhysicsObjects();
 
 	int activeObjects = 0;
-
+	auto & objects = p_scene->GetPhysicsObjects();
 	for (auto iter = objects.begin(); iter != objects.end(); ++iter)
 	{
 		IPhysicsObject *obj = (*iter);
@@ -78,6 +78,14 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 				Gizmos::addAABBFilled(obj->GetPosition(), vec3(r * 0.875F), col);
 			}
 		}
+	}
+
+	auto & constraints = p_scene->GetConstraints();
+	for (auto iter = constraints.begin(); iter != constraints.end(); ++iter)
+	{
+		IConstraint *con = (*iter);
+
+		Gizmos::addLine(con->GetObject1()->GetPosition(), con->GetObject2()->GetPosition(), vec4(1.0F, 0.0F, 0.0F, 0.5F));
 	}
 
 	printf("Physics Objects: %d [AWAKE] / %d [TOTAL]\n", activeObjects, objects.size());

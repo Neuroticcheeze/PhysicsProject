@@ -85,7 +85,7 @@ bool PhysXApplication::update(float deltaTime)
 	if (t > 2.0F)
 	{
 		m_psys->Add("box", glm::linearRand(10, 1000), physx::PxBoxGeometry(glm::linearRand(0.5F, 3.0F), glm::linearRand(0.5F, 3.0F), glm::linearRand(0.5F, 3.0F)),
-			physx::PxVec3(0, 10, 0),
+			physx::PxVec3(0, 50, 0),
 			physx::PxQuat(glm::radians(45.0F), physx::PxVec3(0, 1, 0)));
 		t = 0.0F;
 	}
@@ -93,7 +93,7 @@ bool PhysXApplication::update(float deltaTime)
 	else if (t > 1.0F && t < 1.01F)
 	{
 		m_psys->Add("box", glm::linearRand(10, 1000), physx::PxSphereGeometry(glm::linearRand(0.5F, 3.0F)),
-			physx::PxVec3(0, 10, 0),
+			physx::PxVec3(0, 50, 0),
 			physx::PxQuat(glm::radians(45.0F), physx::PxVec3(0, 1, 0)));
 	}
 

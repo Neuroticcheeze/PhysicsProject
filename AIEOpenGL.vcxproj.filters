@@ -35,7 +35,19 @@
     <ClCompile Include="src\TestApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Physics\PhysicsObject.cpp">
+    <ClCompile Include="src\PhysXApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PhysX.cpp">
+      <Filter>Source Files\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\Collider.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\IConstraint.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\IPhysicsObject.cpp">
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
     <ClCompile Include="src\Physics\PhysicsScene.cpp">
@@ -44,14 +56,8 @@
     <ClCompile Include="src\Physics\PhysicsSceneRenderer.cpp">
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="src\Physics\Collider.cpp">
+    <ClCompile Include="src\Physics\Spring.cpp">
       <Filter>Source Files\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PhysXApplication.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PhysX.cpp">
-      <Filter>Source Files\PhysX</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -70,7 +76,19 @@
     <ClInclude Include="src\BaseApplication.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Physics\PhysicsObject.h">
+    <ClInclude Include="src\PhysXApplication.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PhysX.h">
+      <Filter>Source Files\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\Collider.h">
+      <Filter>Source Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\IConstraint.h">
+      <Filter>Source Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\IPhysicsObject.h">
       <Filter>Source Files\Physics</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics\PhysicsScene.h">
@@ -79,20 +97,14 @@
     <ClInclude Include="src\Physics\PhysicsSceneRenderer.h">
       <Filter>Source Files\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="src\Physics\Collider.h">
+    <ClInclude Include="src\Physics\PlaneCollider.h">
       <Filter>Source Files\Physics</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics\SphereCollider.h">
       <Filter>Source Files\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="src\Physics\PlaneCollider.h">
+    <ClInclude Include="src\Physics\Spring.h">
       <Filter>Source Files\Physics</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PhysXApplication.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PhysX.h">
-      <Filter>Source Files\PhysX</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

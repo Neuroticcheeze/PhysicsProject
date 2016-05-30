@@ -1,4 +1,5 @@
 
+#define _PHYSXw
 
 #ifdef _PHYSX
 #include "PhysXApplication.h"

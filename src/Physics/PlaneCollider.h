@@ -6,7 +6,7 @@
 using glm::vec3;
 
 
-#include "PhysicsObject.h"
+#include "IPhysicsObject.h"
 namespace Physics
 {
 	class PlaneCollider : public Collider
