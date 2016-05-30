@@ -4,8 +4,10 @@
 #include "IConstraint.h"
 #include "../Gizmos.h"
 #include <glm/vec4.hpp>
+#include <glm/glm.hpp>
 
 #include "SphereCollider.h"
+#include "PlaneCollider.h"
 #include "Collider.h"
 
 #include "..\Camera.h"
@@ -46,7 +48,9 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 
 		Collider * collider = obj->GetCollider();
 
-		if (collider->GetType() == Collider::Type::SPHERE)
+		switch (collider->GetType())
+		{
+		case Collider::Type::SPHERE:
 		{
 			float r = ((SphereCollider*)collider)->GetRadius();
 
@@ -77,6 +81,28 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 				float r = ((SphereCollider*)collider)->GetRadius();
 				Gizmos::addAABBFilled(obj->GetPosition(), vec3(r * 0.875F), col);
 			}
+		}
+			break;
+
+		case Collider::Type::PLANE:
+		{
+			vec3 planeNormal = ((PlaneCollider*)collider)->GetNormal();
+			float planeDistance = ((PlaneCollider*)collider)->GetDistance();
+
+			glm::mat4 normMatrix = glm::lookAt(vec3(0), planeNormal, vec3(0.000001F, 1, 0));
+
+			vec3 corners[4] = 
+			{
+				vec3(vec4(-9999, -9999, planeDistance, 1) * normMatrix),
+				vec3(vec4(-9999, +9999, planeDistance, 1) * normMatrix),
+				vec3(vec4(+9999, +9999, planeDistance, 1) * normMatrix),
+				vec3(vec4(+9999, -9999, planeDistance, 1) * normMatrix),
+			};
+
+			Gizmos::addTri(corners[0], corners[1], corners[2], info.m_colour);
+			Gizmos::addTri(corners[0], corners[2], corners[3], info.m_colour);
+		}
+			break;
 		}
 	}
 

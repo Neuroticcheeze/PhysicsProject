@@ -30,16 +30,15 @@ void IPhysicsObject::Update(const float & p_deltaTime)
 
 	}
 
-	// clear acceleration
-	m_acceleration.x = m_acceleration.y = m_acceleration.z = 0.0F;
 
+	SetAcceleration(vec3(0.0F));
 
 	if (m_collider != nullptr)
 	{
 		m_collider->Transform(this);
 	}
 
-	if ((m_life += p_deltaTime) > 20.0F)
+	if ((m_life += p_deltaTime) > 30.0F)
 		Destroy();
 }
 

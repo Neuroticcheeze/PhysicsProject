@@ -69,7 +69,7 @@ namespace Physics
 			return m_constraints;
 		}
 
-		void SetGravity(const vec3 &p_gravity) { m_gravity = p_gravity * 10.0F; }
+		void SetGravity(const vec3 &p_gravity) { m_gravity = p_gravity; }
 		const vec3 &GetGravity() const { return m_gravity;  }
 
 	protected:

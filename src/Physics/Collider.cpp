@@ -81,7 +81,8 @@ bool Collider::SphereToSphereIntersect(SphereCollider *p_col1, SphereCollider *p
 		// Intersecting
 		if (iinfo != nullptr)
 		{
-			iinfo->m_collisionVec = glm::normalize(diff) * (minDistance - distance);
+			iinfo->m_collisionVec = glm::normalize(diff);
+			iinfo->m_pushFactor = minDistance - distance;
 		}
 
 		return true;
@@ -92,18 +93,19 @@ bool Collider::SphereToSphereIntersect(SphereCollider *p_col1, SphereCollider *p
 
 bool Collider::SphereToPlaneIntersect(SphereCollider *p_col1, PlaneCollider *p_col2, IntersectInfo *iinfo)
 {
-	vec4 plane(0, -1, 0, 0);
+	vec4 plane(p_col2->GetNormal(), p_col2->GetDistance());
 
 	vec3 planeNormal = vec3(plane);
 
-	float d = glm::abs(glm::dot(planeNormal, p_col1->GetPosition()) + plane.w);
+	float d = glm::dot(planeNormal, p_col1->GetPosition()) + plane.w;
 
 	if (d < p_col1->GetRadius())
 	{
 		// Intersecting
 		if (iinfo != nullptr)
 		{
-			iinfo->m_collisionVec = planeNormal * (p_col1->GetRadius() - d);
+			iinfo->m_collisionVec = planeNormal;
+			iinfo->m_pushFactor = -glm::abs(p_col1->GetRadius() - d);
 		}
 
 		return true;

@@ -49,23 +49,23 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 
 		////-----------Temporary collision-----------
 
-		//const Collider * col = obj->GetCollider();
-		//const vec3 & pos = obj->GetPosition();
-		//const vec3 & vel = obj->GetVelocity();
+		const Collider * col = obj->GetCollider();
+		const vec3 & pos = obj->GetPosition();
+		const vec3 & vel = obj->GetVelocity();
 
-		//if (col != nullptr && col->GetType() == Collider::Type::SPHERE)
-		//{
-		//	float k = ((SphereCollider*)col)->GetRadius();
+		if (col != nullptr && col->GetType() == Collider::Type::SPHERE)
+		{
+			float k = ((SphereCollider*)col)->GetRadius();
 
-		//	if (pos.y < k)//On the ground
-		//	{
+			if (pos.y < k)//On the ground
+			{
 
-		//		obj->ApplyForce(-obj->GetVelocity() * obj->GetDampening());
+				obj->ApplyForce(-obj->GetVelocity() * obj->GetDampening());
 
-		//		obj->SetPosition(vec3(pos.x, k, pos.z));
-		//		obj->SetVelocity(vec3(vel.x, -vel.y * obj->GetBounciness(), vel.z));
-		//	}
-		//}
+				obj->SetPosition(vec3(pos.x, k, pos.z));
+				obj->SetVelocity(vec3(vel.x, -vel.y * obj->GetBounciness(), vel.z));
+			}
+		}
 	}
 
 	DetectCollisions();
@@ -75,7 +75,7 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 	{
 		IPhysicsObject *obj = (*iter);
 
-		if (glm::distance(obj->GetPosition(), obj->GetPositionDelta()) < 0.001F)
+		if (glm::distance(obj->GetPosition(), obj->GetPositionDelta()) < 0.00001F)
 		{
 			obj->Sleep();
 		}
@@ -194,10 +194,7 @@ void PhysicsScene::ResolveCollisions()
 
 		vec3 impulse = impulseLen * collideNormal;
 
-		if (!obj1->GetIsStatic()) obj1->SetPosition()
-			if (!obj2->GetIsStatic())
-		
-		obj1->SetVelocity(obj1->GetVelocity() - obj1->GetInverseMass() * impulse);
-		obj2->SetVelocity(obj2->GetVelocity() + obj2->GetInverseMass() * impulse);
+		if (!obj1->GetIsStatic()) obj1->SetVelocity(obj1->GetVelocity() - obj1->GetInverseMass() * impulse);
+		if (!obj2->GetIsStatic()) obj2->SetVelocity(obj2->GetVelocity() + obj2->GetInverseMass() * impulse);
 	}
 }

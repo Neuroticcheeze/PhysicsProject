@@ -38,23 +38,24 @@ bool TestApplication::startup() {
 
 	// create a camera
 	m_camera = new Camera(glm::pi<float>() * 0.25f, 16 / 9.f, 0.1f, 1000.f);
-	m_camera->setLookAtFrom(vec3(50, 10, 0), vec3(0));
+	m_camera->setLookAtFrom(vec3(40, 40, 80), vec3(0));
 	
 	//////////////////////////////////////////////////////////////////////////
 	// YOUR STARTUP CODE HERE
 	//////////////////////////////////////////////////////////////////////////
 
 	m_physicsScene = new Physics::PhysicsScene();
-	m_physicsScene->SetGravity(vec3(0, -0.05F, 0));
+	m_physicsScene->SetGravity(vec3(0, -98.0F, 0));
 	m_physicsSceneRenderer = new Physics::PhysicsSceneRenderer();
 
-	{
-		Physics::IPhysicsObject *obj0 = m_physicsScene->CreatePhysicsObject<Physics::IPhysicsObject>();
-		obj0->SetCollider(new Physics::PlaneCollider(vec3(0, 1, 0)));
-		obj0->SetIsStatic(true);
-		m_physicsSceneRenderer->GetRenderInfo(obj0).m_colour = vec4(0, 1, 0.5F, 0.75F);
-		obj0->SetPosition(vec3(0, 0, 0));
-	}
+	//{
+	//	Physics::IPhysicsObject *obj0 = m_physicsScene->CreatePhysicsObject<Physics::IPhysicsObject>();
+	//	obj0->SetCollider(new Physics::PlaneCollider(vec3(0, 1, 0), 5));
+	//	obj0->SetIsStatic(true);
+	//	obj0->SetBounciness(0.8F);
+	//	m_physicsSceneRenderer->GetRenderInfo(obj0).m_colour = vec4(0.2F, 1, 0.412F, 1);
+	//	obj0->SetPosition(vec3(0, 0, 0));
+	//}
 
 
 
@@ -63,25 +64,28 @@ bool TestApplication::startup() {
 	{
 		obj0 = m_physicsScene->CreatePhysicsObject<Physics::IPhysicsObject>();
 		obj0->SetCollider(new Physics::SphereCollider(5));
-		obj0->SetMass(5);
+		obj0->SetMass(1);
+		obj0->SetBounciness(0.85F);
+		obj0->SetDampening(10.0F);
 		m_physicsSceneRenderer->GetRenderInfo(obj0).m_colour = vec4(0, 1, 0.5F, 0.75F);
 		obj0->SetPosition(vec3(0, 6, 0));
 	}
 
-	/*for (int n = 0; n < 15; ++n)
+	for (int n = 0; n < 50; ++n)
 	{
 
 
 		{
 			obj1 = m_physicsScene->CreatePhysicsObject<Physics::IPhysicsObject>();
 			obj1->SetCollider(new Physics::SphereCollider(1));
-			obj1->SetMass(0.5F);
-			obj1->SetBounciness(0.85F);
+			obj1->SetMass(15);
+			obj1->SetBounciness(0.4F);
+			obj1->SetDampening(30.0F);
 			m_physicsSceneRenderer->GetRenderInfo(obj0).m_colour = vec4(0, 1, 0.5F, 0.75F);
-			obj1->SetPosition(vec3(n * 2, 75 - n * 1, n * 2));
+			obj1->SetPosition(vec3(n * 1, 100 - n * 3, n * 2));
 		}
 
-		m_physicsScene->CreateConstraint<Physics::Spring>(obj0, obj1, 3, 100, 0.6F, 800.0F);
+		m_physicsScene->CreateConstraint<Physics::Spring>(obj0, obj1, 5, 100, 0.9F, 2000.0F);
 
 		obj0 = obj1;
 	}
@@ -90,13 +94,13 @@ bool TestApplication::startup() {
 		obj1 = m_physicsScene->CreatePhysicsObject<Physics::IPhysicsObject>();
 		obj1->SetCollider(new Physics::SphereCollider(6));
 		obj1->SetMass(20);
-		obj1->SetDampening(0.9F);
+		obj1->SetDampening(30.0F);
 		obj1->SetBounciness(0.9F);
 		m_physicsSceneRenderer->GetRenderInfo(obj0).m_colour = vec4(0, 1, 0.5F, 0.75F);
 		obj1->SetPosition(vec3(0, 8, 0));
 	}
 
-	m_physicsScene->CreateConstraint<Physics::Spring>(obj0, obj1, 3, 50, 0.6F, 800.0F);*/
+	m_physicsScene->CreateConstraint<Physics::Spring>(obj0, obj1, 3, 50, 0.6F, 800.0F);
 
 
 	glLineWidth(2.0F);
@@ -143,8 +147,9 @@ bool TestApplication::update(float deltaTime)
 		float r = glm::linearRand(1.0F, 5.0F);
 		Physics::IPhysicsObject *obj = m_physicsScene->CreatePhysicsObject<Physics::IPhysicsObject>();
 		obj->SetCollider(new Physics::SphereCollider(r));
-		obj->SetMass(r * density);
-		obj->SetDampening(10);
+		obj->SetMass(55);
+		obj->SetBounciness(0.1F);
+		obj->SetDampening(30.0F);
 		m_physicsSceneRenderer->GetRenderInfo(obj).m_colour = vec4(glm::ballRand(0.5F) + 0.5F, 1);
 		obj->SetPosition(glm::ballRand(5.0F) + vec3(0, 100, 0));
 	}
@@ -155,14 +160,15 @@ bool TestApplication::update(float deltaTime)
 	
 	if (leftMouseClick && !leftMouseClickPrev)
 	{
-		const float density = 0.05F;
+		const float density = 5.5F;
 
 		float r = glm::linearRand(1.0F, 5.0F);
 		Physics::IPhysicsObject *obj = m_physicsScene->CreatePhysicsObject<Physics::IPhysicsObject>();
 		obj->SetCollider(new Physics::SphereCollider(r));
 		obj->SetMass(r * density);
-		obj->SetDampening(0.5F);
-		obj->SetVelocity(vec3(-forwardVec) * 150.0F + glm::ballRand(20.0F));
+		obj->SetDampening(30.0F);
+		obj->SetBounciness(0.1F);
+		obj->SetVelocity(vec3(-forwardVec) * 150.0F + glm::ballRand(7.0F));
 		m_physicsSceneRenderer->GetRenderInfo(obj).m_colour = vec4(glm::ballRand(0.5F) + 0.5F, 1);
 		obj->SetPosition(vec3(positionVec));
 	}

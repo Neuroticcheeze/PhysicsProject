@@ -54,5 +54,6 @@ namespace Physics
 	struct Collider::IntersectInfo
 	{
 		vec3 m_collisionVec;
+		float m_pushFactor;
 	};
 }
