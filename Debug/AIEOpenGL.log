@@ -1,12 +1,31 @@
 ﻿  TestApplication.cpp
-c:\users\jesse.farag\desktop\physicsproject\src\physics\physicsscene.h(52): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-  c:\users\jesse.farag\desktop\physicsproject\src\physics\testapplication.cpp(135): note: see reference to function template instantiation 'T *Physics::PhysicsScene::CreateConstraint<Physics::Spring,Physics::IPhysicsObject*,Physics::IPhysicsObject*,int,int,float,float>(Physics::IPhysicsObject *,Physics::IPhysicsObject *,int,int,float,float)' being compiled
-          with
-          [
-              T=Physics::Spring
-          ]
   PhysXApplication.cpp
 c:\users\jesse.farag\desktop\physicsproject\src\physx\physxapplication.cpp(89): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
 c:\users\jesse.farag\desktop\physicsproject\src\physx\physxapplication.cpp(97): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+  PhysX.cpp
+  Spring.cpp
+  PhysicsSceneRenderer.cpp
+  PhysicsScene.cpp
+  IPhysicsObject.cpp
+  IConstraint.cpp
+  ICollider.cpp
+  ICloth.cpp
+  main.cpp
+  Gizmos.cpp
+  Camera.cpp
+  BaseApplication.cpp
   Generating Code...
+  gl_core_4_4.c
+glfw3.lib(context.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(context.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
+glfw3.lib(init.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(init.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
+glfw3.lib(input.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(input.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
+glfw3.lib(monitor.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(monitor.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
+glfw3.lib(window.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(window.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
+glfw3.lib(win32_init.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_init.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
+glfw3.lib(win32_monitor.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_monitor.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
+glfw3.lib(win32_time.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_time.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
+glfw3.lib(win32_tls.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_tls.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
+glfw3.lib(win32_window.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_window.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
+glfw3.lib(winmm_joystick.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(winmm_joystick.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
+glfw3.lib(wgl_context.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(wgl_context.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
   AIEOpenGL.vcxproj -> C:\Users\jesse.farag\Desktop\PhysicsProject\bin\AIEOpenGL_d.exe

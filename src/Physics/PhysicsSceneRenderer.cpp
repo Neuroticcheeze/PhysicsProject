@@ -2,6 +2,7 @@
 #include "PhysicsScene.h"
 #include "IPhysicsObject.h"
 #include "IConstraint.h"
+#include "ICloth.h"
 #include "../Gizmos.h"
 #include <glm/vec4.hpp>
 #include <glm/glm.hpp>
@@ -36,6 +37,54 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 	p_camera->getFrustumPlanes(planes);
 
 
+	auto & cloths = p_scene->GetCloths();
+	for (auto iter = cloths.begin(); iter != cloths.end(); ++iter)
+	{
+		ICloth *cloth = (*iter);
+		IPhysicsObject ** nodes = cloth->GetNodes();
+
+		for (unsigned int r = 0; r < cloth->GetHeight() - 1; ++r)
+		{
+			for (unsigned int c = 0; c < cloth->GetWidth() - 1; ++c)
+			{
+				{
+					auto obj0 = nodes[r * cloth->GetWidth() + c];
+					auto obj1 = nodes[(r + 1) * cloth->GetWidth() + c];
+					auto obj2 = nodes[(r + 1) * cloth->GetWidth() + (c + 1)];
+
+					auto col0 = GetRenderInfo(obj0).m_colour;
+					auto col1 = GetRenderInfo(obj1).m_colour;
+					auto col2 = GetRenderInfo(obj2).m_colour;
+
+					auto col = glm::mix(col0, glm::mix(col1, col2, 0.5F), 0.6667F);
+
+					col.a = 1.0F;
+
+					if (!(obj0->GetHasConstraintBroke() || obj1->GetHasConstraintBroke() || obj2->GetHasConstraintBroke()))
+					Gizmos::addTri(obj0->GetPosition(), obj1->GetPosition(), obj2->GetPosition(), col);
+				}
+
+				{
+					auto obj0 = nodes[r * cloth->GetWidth() + c];
+					auto obj1 = nodes[(r + 1) * cloth->GetWidth() + (c + 1)];
+					auto obj2 = nodes[r * cloth->GetWidth() + (c + 1)];
+
+					auto col0 = GetRenderInfo(obj0).m_colour;
+					auto col1 = GetRenderInfo(obj1).m_colour;
+					auto col2 = GetRenderInfo(obj2).m_colour;
+
+					auto col = glm::mix(col0, glm::mix(col1, col2, 0.5F), 0.6667F);
+
+					col.a = 1.0F;
+
+					if (!(obj0->GetHasConstraintBroke() || obj1->GetHasConstraintBroke() || obj2->GetHasConstraintBroke()))
+					Gizmos::addTri(obj0->GetPosition(), obj1->GetPosition(), obj2->GetPosition(), col);
+				}
+			}
+		}
+	}
+
+
 	int activeObjects = 0;
 	auto & objects = p_scene->GetPhysicsObjects();
 	for (auto iter = objects.begin(); iter != objects.end(); ++iter)
@@ -45,6 +94,11 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 		activeObjects += obj->GetIsAwake();
 
 		RenderInfo &info = GetRenderInfo(obj);
+
+		auto col = info.m_colour;
+
+		if (col.a == 0.0F)
+			continue;
 
 		ICollider * collider = obj->GetCollider();
 
@@ -67,8 +121,6 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 
 			if (hidden)
 				continue;
-
-			auto col = info.m_colour;
 
 			if (obj->GetIsAwake())
 			{
@@ -99,8 +151,8 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 				vec3(vec4(+9999, -9999, -planeDistance, 1) * normMatrix),
 			};
 
-			Gizmos::addTri(corners[0], corners[1], corners[2], info.m_colour);
-			Gizmos::addTri(corners[0], corners[2], corners[3], info.m_colour);
+			Gizmos::addTri(corners[0], corners[1], corners[2], col);
+			Gizmos::addTri(corners[0], corners[2], corners[3], col);
 		}
 			break;
 		}
@@ -111,7 +163,20 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 	{
 		IConstraint *con = (*iter);
 
-		Gizmos::addLine(con->GetObject1()->GetPosition(), con->GetObject2()->GetPosition(), vec4(1.0F, 0.0F, 0.0F, 0.5F));
+		auto col0 = GetRenderInfo(con->GetObject1()).m_colour;
+/*
+		if (col0.a == 0.0F)
+			continue;*/
+
+		auto col1 = GetRenderInfo(con->GetObject1()).m_colour;
+/*
+		if (col1.a == 0.0F)
+			continue;*/
+
+		auto col = glm::mix(col0, col1, 0.5F);
+		col.a = 1.0F;
+
+		Gizmos::addLine(con->GetObject1()->GetPosition(), con->GetObject2()->GetPosition(), col);
 	}
 
 	printf("Physics Objects: %d [AWAKE] / %d [TOTAL]\n", activeObjects, objects.size());

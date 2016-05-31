@@ -12,7 +12,7 @@ namespace Physics
 		IConstraint(IPhysicsObject * p_obj1, IPhysicsObject * p_obj2);
 		virtual ~IConstraint();
 
-		virtual void Contstrain(PhysicsScene * p_system);
+		virtual void Contstrain(PhysicsScene * p_scene);
 
 		inline IPhysicsObject * GetObject1()	{ return m_obj1; };
 		inline IPhysicsObject * GetObject2()	{ return m_obj2; };

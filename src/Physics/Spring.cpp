@@ -30,7 +30,7 @@ Spring::~Spring()
 
 }
 
-void Spring::Contstrain(PhysicsScene * p_system)
+void Spring::Contstrain(PhysicsScene * p_scene)
 {
 	vec3 springVec = m_obj1->GetPosition() - m_obj2->GetPosition();
 	float dist = glm::length(springVec);

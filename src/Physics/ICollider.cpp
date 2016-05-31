@@ -2,6 +2,7 @@
 
 #include "PlaneCollider.h"
 #include "SphereCollider.h"
+#include "PointCollider.h"
 
 #include <glm\ext.hpp>
 
@@ -27,6 +28,11 @@ bool ICollider::Intersects(ICollider * p_other, IntersectInfo * p_iinfo)
 		else if (p_other->GetType() == Type::PLANE)
 		{
 			return SphereToPlaneIntersect((SphereCollider*)this, (PlaneCollider*)p_other, p_iinfo);
+		}
+
+		else if (p_other->GetType() == Type::POINT)
+		{
+			return SphereToPointIntersect((SphereCollider*)this, (PointCollider*)p_other, p_iinfo);
 		}
 	}
 
@@ -64,6 +70,31 @@ bool ICollider::Intersects(ICollider * p_other, IntersectInfo * p_iinfo)
 		{
 
 		}
+
+		else if (p_other->GetType() == Type::POINT)
+		{
+			return PointToPlaneIntersect((PointCollider*)p_other, (PlaneCollider*)this, p_iinfo);
+		}
+	}
+
+	else if (GetType() == Type::POINT)
+	{
+		if (p_other->GetType() == Type::SPHERE)
+		{
+			return SphereToPointIntersect((SphereCollider*)p_other, (PointCollider*)this, p_iinfo);
+		}
+
+		else if (p_other->GetType() == Type::AABB)
+		{
+
+		}
+
+		else if (p_other->GetType() == Type::PLANE)
+		{
+			return PointToPlaneIntersect((PointCollider*)this, (PlaneCollider*)p_other, p_iinfo);
+		}
+
+		//Points cannot collide with each other!
 	}
 
 	return false;
@@ -106,6 +137,51 @@ bool ICollider::SphereToPlaneIntersect(SphereCollider *p_col1, PlaneCollider *p_
 		{
 			iinfo->m_collisionVec = planeNormal;
 			iinfo->m_pushFactor = p_col1->GetRadius() - d;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+bool ICollider::SphereToPointIntersect(SphereCollider *p_col1, PointCollider *p_col2, IntersectInfo *iinfo)
+{
+	vec3 diff = p_col1->GetPosition() - p_col2->GetPosition();
+	float distance = glm::length(diff);
+
+	float minDistance = p_col1->GetRadius();
+
+	if (distance < minDistance)
+	{
+		// Intersecting
+		if (iinfo != nullptr)
+		{
+			iinfo->m_collisionVec = glm::normalize(diff);
+			iinfo->m_pushFactor = 0.0F;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+bool ICollider::PointToPlaneIntersect(PointCollider *p_col1, PlaneCollider *p_col2, IntersectInfo *iinfo)
+{
+	vec4 plane(p_col2->GetNormal(), p_col2->GetDistance());
+
+	vec3 planeNormal = vec3(plane);
+
+	float d = glm::dot(planeNormal, p_col1->GetPosition()) - plane.w;
+
+	if (d < 0.2F)
+	{
+		// Intersecting
+		if (iinfo != nullptr)
+		{
+			iinfo->m_collisionVec = planeNormal;
+			iinfo->m_pushFactor = 0.2F;
 		}
 
 		return true;

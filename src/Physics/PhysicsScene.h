@@ -9,6 +9,7 @@ using glm::vec3;
 
 namespace Physics
 {
+	class ICloth;
 	class IConstraint;
 	class IPhysicsObject;
 
@@ -59,6 +60,22 @@ namespace Physics
 		void DestroyConstraint(IConstraint *p_constraint);
 		// -----------------------------------------------------------------------
 
+		// Cloths ----------------------------------------------------------------
+		template <class T, typename ... TArgs>
+		T *CreateCloth(TArgs ... p_args)
+		{
+			static_assert(std::is_base_of<ICloth, T>::value, "CreateCloth");
+
+			T *pObject = new T(this, p_args ...);
+
+			m_cloths.push_back(pObject);
+
+			return pObject;
+		}
+
+		void DestroyCloth(ICloth *p_cloth);
+		// -----------------------------------------------------------------------
+
 		const std::vector<IPhysicsObject *> &GetPhysicsObjects() const
 		{
 			return m_physicsObjects;
@@ -69,13 +86,18 @@ namespace Physics
 			return m_constraints;
 		}
 
+		const std::vector<ICloth *> &GetCloths() const
+		{
+			return m_cloths;
+		}
+
 		void SetGravity(const vec3 &p_gravity) { m_gravity = p_gravity; }
 		const vec3 &GetGravity() const { return m_gravity;  }
 
 	protected:
 		
 		void DetectCollisions();
-		void ResolveCollisions();
+		void ResolveCollisions(float p_deltaTime);
 
 	protected:
 
@@ -87,6 +109,7 @@ namespace Physics
 		};
 
 		std::vector<IPhysicsObject *> m_physicsObjects;
+		std::vector<ICloth *> m_cloths;
 		std::vector<IConstraint *> m_constraints;
 		std::vector<CollisionInfo> m_collisions;
 

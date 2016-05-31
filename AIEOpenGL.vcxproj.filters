@@ -59,6 +59,9 @@
     <ClCompile Include="src\Physics\TestApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Physics\ICloth.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\gl_core_4_4.h">
@@ -106,5 +109,7 @@
     <ClInclude Include="src\Physics\TestApplication.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Physics\ICloth.h" />
+    <ClInclude Include="src\Physics\PointCollider.h" />
   </ItemGroup>
 </Project>

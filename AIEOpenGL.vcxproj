@@ -16,6 +16,7 @@
     <ClCompile Include="src\Gizmos.cpp" />
     <ClCompile Include="src\gl_core_4_4.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Physics\ICloth.cpp" />
     <ClCompile Include="src\Physics\ICollider.cpp" />
     <ClCompile Include="src\Physics\IConstraint.cpp" />
     <ClCompile Include="src\Physics\IPhysicsObject.cpp" />
@@ -31,12 +32,14 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Gizmos.h" />
     <ClInclude Include="src\gl_core_4_4.h" />
+    <ClInclude Include="src\Physics\ICloth.h" />
     <ClInclude Include="src\Physics\ICollider.h" />
     <ClInclude Include="src\Physics\IConstraint.h" />
     <ClInclude Include="src\Physics\IPhysicsObject.h" />
     <ClInclude Include="src\Physics\PhysicsScene.h" />
     <ClInclude Include="src\Physics\PhysicsSceneRenderer.h" />
     <ClInclude Include="src\Physics\PlaneCollider.h" />
+    <ClInclude Include="src\Physics\PointCollider.h" />
     <ClInclude Include="src\Physics\SphereCollider.h" />
     <ClInclude Include="src\Physics\Spring.h" />
     <ClInclude Include="src\PhysX\PhysX.h" />

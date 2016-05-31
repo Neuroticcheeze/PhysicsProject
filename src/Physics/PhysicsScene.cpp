@@ -1,6 +1,7 @@
 #include "PhysicsScene.h"
 #include "IPhysicsObject.h"
 #include "IConstraint.h"
+#include "ICloth.h"
 
 #include "SphereCollider.h"
 
@@ -49,7 +50,7 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 	}
 
 	DetectCollisions();
-	ResolveCollisions();
+	ResolveCollisions(p_deltaTime);
 
 	for (auto iter = m_physicsObjects.begin(); iter != m_physicsObjects.end(); ++iter)
 	{
@@ -117,6 +118,18 @@ void PhysicsScene::DestroyConstraint(IConstraint *p_constraint)
 	delete p_constraint;
 }
 
+void PhysicsScene::DestroyCloth(ICloth *p_cloth)
+{
+	auto iter = std::find(m_cloths.begin(), m_cloths.end(), p_cloth);
+
+	if (iter != m_cloths.end())
+	{
+		m_cloths.erase(iter);
+	}
+
+	delete p_cloth;
+}
+
 void PhysicsScene::DetectCollisions()
 {
 	m_collisions.clear();
@@ -141,7 +154,7 @@ void PhysicsScene::DetectCollisions()
 	}
 }
 
-void PhysicsScene::ResolveCollisions()
+void PhysicsScene::ResolveCollisions(float p_deltaTime)
 {
 	for (auto iter = m_collisions.begin(); iter != m_collisions.end(); ++iter)
 	{
@@ -176,7 +189,8 @@ void PhysicsScene::ResolveCollisions()
 		const float k_slop = 0.001f; // Penetration allowance
 		const float percent = 0.999f; // Penetration percentage to correct
 		vec3 correction = (glm::max(iinfo.m_pushFactor * 0.333F - k_slop, 0.0f) / (obj1->GetInverseMass() + obj2->GetInverseMass())) * percent * collideNormal;
-		obj1->SetPosition(obj1->GetPosition() - obj1->GetInverseMass() * correction);
-		obj2->SetPosition(obj2->GetPosition() + obj2->GetInverseMass() * correction);
+		
+		if (!obj1->GetIsStatic()) obj1->SetPosition(obj1->GetPosition() - obj1->GetInverseMass() * correction);
+		if (!obj2->GetIsStatic()) obj2->SetPosition(obj2->GetPosition() + obj2->GetInverseMass() * correction);
 	}
 }

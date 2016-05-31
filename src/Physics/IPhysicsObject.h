@@ -55,6 +55,9 @@ namespace Physics
 
 		inline const std::vector<IConstraint *> & GetInvolvedConstraints() const 
 																	{ return m_involvedConstraints; }
+
+		inline const bool & GetHasConstraintBroke() const			{ return m_constraintBroke;}
+
 		ICollider *GetCollider();
 
 	private:
@@ -75,6 +78,7 @@ namespace Physics
 		bool m_awake;
 
 		bool m_destroyed;
+		bool m_constraintBroke;
 
 		std::vector<IConstraint *> m_involvedConstraints;
 	};
