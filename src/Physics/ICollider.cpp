@@ -1,4 +1,4 @@
-#include "Collider.h"
+#include "ICollider.h"
 
 #include "PlaneCollider.h"
 #include "SphereCollider.h"
@@ -10,7 +10,7 @@ using glm::vec4;
 
 using namespace Physics;
 
-bool Collider::Intersects(Collider * p_other, IntersectInfo * p_iinfo)
+bool ICollider::Intersects(ICollider * p_other, IntersectInfo * p_iinfo)
 {
 	if (GetType() == Type::SPHERE)
 	{
@@ -69,7 +69,7 @@ bool Collider::Intersects(Collider * p_other, IntersectInfo * p_iinfo)
 	return false;
 }
 
-bool Collider::SphereToSphereIntersect(SphereCollider *p_col1, SphereCollider *p_col2, Collider::IntersectInfo *iinfo)
+bool ICollider::SphereToSphereIntersect(SphereCollider *p_col1, SphereCollider *p_col2, ICollider::IntersectInfo *iinfo)
 {
 	vec3 diff = p_col1->GetPosition() - p_col2->GetPosition();
 	float distance = glm::length(diff);
@@ -81,7 +81,7 @@ bool Collider::SphereToSphereIntersect(SphereCollider *p_col1, SphereCollider *p
 		// Intersecting
 		if (iinfo != nullptr)
 		{
-			iinfo->m_collisionVec = glm::normalize(diff);
+			iinfo->m_collisionVec = -glm::normalize(diff);
 			iinfo->m_pushFactor = minDistance - distance;
 		}
 
@@ -91,13 +91,13 @@ bool Collider::SphereToSphereIntersect(SphereCollider *p_col1, SphereCollider *p
 	return false;
 }
 
-bool Collider::SphereToPlaneIntersect(SphereCollider *p_col1, PlaneCollider *p_col2, IntersectInfo *iinfo)
+bool ICollider::SphereToPlaneIntersect(SphereCollider *p_col1, PlaneCollider *p_col2, IntersectInfo *iinfo)
 {
 	vec4 plane(p_col2->GetNormal(), p_col2->GetDistance());
 
 	vec3 planeNormal = vec3(plane);
 
-	float d = glm::dot(planeNormal, p_col1->GetPosition()) + plane.w;
+	float d = glm::dot(planeNormal, p_col1->GetPosition()) - plane.w;
 
 	if (d < p_col1->GetRadius())
 	{
@@ -105,7 +105,7 @@ bool Collider::SphereToPlaneIntersect(SphereCollider *p_col1, PlaneCollider *p_c
 		if (iinfo != nullptr)
 		{
 			iinfo->m_collisionVec = planeNormal;
-			iinfo->m_pushFactor = -glm::abs(p_col1->GetRadius() - d);
+			iinfo->m_pushFactor = p_col1->GetRadius() - d;
 		}
 
 		return true;
@@ -114,9 +114,9 @@ bool Collider::SphereToPlaneIntersect(SphereCollider *p_col1, PlaneCollider *p_c
 	return false;
 }
 
-Collider *Collider::GetNoneInstance()
+ICollider *ICollider::GetNoneInstance()
 {
-	static Collider collider(Type::NONE);
+	static ICollider collider(Type::NONE);
 
 	return &collider;
 }

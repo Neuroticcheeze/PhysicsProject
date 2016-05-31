@@ -1,17 +1,19 @@
 #pragma once
 
 #include <glm\glm.hpp>
+#include <vector>
 
-#include "Collider.h"
+#include "ICollider.h"
 
 using glm::vec3;
 
 namespace Physics
 {
-	class Collider;
+	class ICollider;
 
 	class IPhysicsObject
 	{
+		friend class IConstraint;
 
 	public:
 
@@ -31,8 +33,8 @@ namespace Physics
 		inline void SetAcceleration(const vec3 & p_acceleration)	{ m_acceleration = p_acceleration; }
 		inline void SetMass(const float & p_mass)					{ m_mass = p_mass; m_invMass = 1.0F / p_mass; }
 		inline void SetBounciness(const float & p_bounciness)		{ m_bounciness = p_bounciness; }
-		inline void SetDampening(const float & p_dampening)			{ m_dampening = p_dampening; }
-		inline void SetCollider(Collider * p_collider)				{ delete m_collider; m_collider = p_collider; }
+		inline void SetFriction(const float & p_friction)			{ m_friction = p_friction; }
+		inline void SetCollider(ICollider * p_collider)				{ delete m_collider; m_collider = p_collider; }
 		inline void SetIsStatic(const bool & p_static)				{ m_static = p_static; }
 		inline void Wake()											{ m_awake = true; }
 		inline void Sleep()											{ m_awake = false; }
@@ -43,8 +45,7 @@ namespace Physics
 		inline const float & GetMass() const						{ return m_mass; }
 		inline const float & GetInverseMass() const					{ return m_invMass; }
 		inline const float & GetBounciness() const					{ return m_bounciness; }
-		inline const float & GetDampening() const					{ return m_dampening; }
-		Collider *GetCollider();
+		inline const float & GetFriction() const					{ return m_friction; }
 		inline const bool & GetIsStatic() const						{ return m_static; }
 		inline const bool & GetIsAwake() const						{ return m_awake; }
 		inline const vec3 & GetPositionDelta() const				{ return m_positionDelta; }
@@ -52,7 +53,11 @@ namespace Physics
 		inline const bool & Destroyed() const						{ return m_destroyed; }
 		inline void Destroy()										{ m_destroyed = true; }
 
-	protected:
+		inline const std::vector<IConstraint *> & GetInvolvedConstraints() const 
+																	{ return m_involvedConstraints; }
+		ICollider *GetCollider();
+
+	private:
 
 		vec3 m_position, m_positionDelta;
 		vec3 m_velocity;
@@ -62,19 +67,16 @@ namespace Physics
 		float m_invMass;
 
 		float m_bounciness;
-		float m_dampening;
+		float m_friction;
 
-		Collider *m_collider;
+		ICollider *m_collider;
 
 		bool m_static;
 		bool m_awake;
 
 		bool m_destroyed;
 
-		float m_life = 0;
-
-	private:
-
+		std::vector<IConstraint *> m_involvedConstraints;
 	};
 
 }	// Physics namespace

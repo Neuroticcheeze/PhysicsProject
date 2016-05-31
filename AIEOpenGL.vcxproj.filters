@@ -32,18 +32,6 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\TestApplication.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PhysXApplication.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\PhysX.cpp">
-      <Filter>Source Files\PhysX</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Physics\Collider.cpp">
-      <Filter>Source Files\Physics</Filter>
-    </ClCompile>
     <ClCompile Include="src\Physics\IConstraint.cpp">
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
@@ -59,11 +47,20 @@
     <ClCompile Include="src\Physics\Spring.cpp">
       <Filter>Source Files\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="src\Physics\ICollider.cpp">
+      <Filter>Source Files\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PhysX\PhysX.cpp">
+      <Filter>Source Files\PhysX</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PhysX\PhysXApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\TestApplication.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\TestApplication.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\gl_core_4_4.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -75,15 +72,6 @@
     </ClInclude>
     <ClInclude Include="src\BaseApplication.h">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PhysXApplication.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\PhysX.h">
-      <Filter>Source Files\PhysX</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Physics\Collider.h">
-      <Filter>Source Files\Physics</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics\IConstraint.h">
       <Filter>Source Files\Physics</Filter>
@@ -105,6 +93,18 @@
     </ClInclude>
     <ClInclude Include="src\Physics\Spring.h">
       <Filter>Source Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\ICollider.h">
+      <Filter>Source Files\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PhysX\PhysX.h">
+      <Filter>Source Files\PhysX</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PhysX\PhysXApplication.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\TestApplication.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -2,10 +2,10 @@
 #define _PHYSXw
 
 #ifdef _PHYSX
-#include "PhysXApplication.h"
+#include "PhysX/PhysXApplication.h"
 #define _APP PhysXApplication
 #else
-#include "TestApplication.h"
+#include "Physics/TestApplication.h"
 #define _APP TestApplication
 #endif
 

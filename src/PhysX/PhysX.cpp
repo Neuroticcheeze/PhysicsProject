@@ -1,6 +1,6 @@
 #include "PhysX.h"
 
-#include "Gizmos.h"
+#include "..\Gizmos.h"
 
 #include <glm\vec3.hpp>
 using glm::vec3;

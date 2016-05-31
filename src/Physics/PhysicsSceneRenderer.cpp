@@ -8,7 +8,7 @@
 
 #include "SphereCollider.h"
 #include "PlaneCollider.h"
-#include "Collider.h"
+#include "ICollider.h"
 
 #include "..\Camera.h"
 
@@ -46,11 +46,11 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 
 		RenderInfo &info = GetRenderInfo(obj);
 
-		Collider * collider = obj->GetCollider();
+		ICollider * collider = obj->GetCollider();
 
 		switch (collider->GetType())
 		{
-		case Collider::Type::SPHERE:
+		case ICollider::Type::SPHERE:
 		{
 			float r = ((SphereCollider*)collider)->GetRadius();
 
@@ -84,7 +84,7 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 		}
 			break;
 
-		case Collider::Type::PLANE:
+		case ICollider::Type::PLANE:
 		{
 			vec3 planeNormal = ((PlaneCollider*)collider)->GetNormal();
 			float planeDistance = ((PlaneCollider*)collider)->GetDistance();
@@ -93,10 +93,10 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 
 			vec3 corners[4] = 
 			{
-				vec3(vec4(-9999, -9999, planeDistance, 1) * normMatrix),
-				vec3(vec4(-9999, +9999, planeDistance, 1) * normMatrix),
-				vec3(vec4(+9999, +9999, planeDistance, 1) * normMatrix),
-				vec3(vec4(+9999, -9999, planeDistance, 1) * normMatrix),
+				vec3(vec4(-9999, -9999, -planeDistance, 1) * normMatrix),
+				vec3(vec4(-9999, +9999, -planeDistance, 1) * normMatrix),
+				vec3(vec4(+9999, +9999, -planeDistance, 1) * normMatrix),
+				vec3(vec4(+9999, -9999, -planeDistance, 1) * normMatrix),
 			};
 
 			Gizmos::addTri(corners[0], corners[1], corners[2], info.m_colour);

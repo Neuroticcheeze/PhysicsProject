@@ -11,7 +11,7 @@ namespace Physics
 
 	class IPhysicsObject;
 
-	class Collider
+	class ICollider
 	{
 	public:
 
@@ -20,11 +20,11 @@ namespace Physics
 
 	public:
 
-		Collider(const Type & p_type) : m_type(p_type) {}
+		ICollider(const Type & p_type) : m_type(p_type) {}
 
 		inline const Type & GetType() const { return m_type; }
 
-		bool Intersects(Collider * p_other, IntersectInfo * p_iinfo = nullptr);
+		bool Intersects(ICollider * p_other, IntersectInfo * p_iinfo = nullptr);
 
 		virtual void Transform(IPhysicsObject *p_owner) {};
 
@@ -32,7 +32,7 @@ namespace Physics
 		static bool SphereToSphereIntersect(SphereCollider *p_col1, SphereCollider *p_col2, IntersectInfo *iinfo);
 		static bool SphereToPlaneIntersect(SphereCollider *p_col1, PlaneCollider *p_col2, IntersectInfo *iinfo);
 
-		static Collider *GetNoneInstance();
+		static ICollider *GetNoneInstance();
 
 	protected:
 
@@ -42,7 +42,7 @@ namespace Physics
 
 	};
 
-	enum class Collider::Type
+	enum class ICollider::Type
 	{
 		NONE,
 		SPHERE,
@@ -51,7 +51,7 @@ namespace Physics
 	};
 
 
-	struct Collider::IntersectInfo
+	struct ICollider::IntersectInfo
 	{
 		vec3 m_collisionVec;
 		float m_pushFactor;

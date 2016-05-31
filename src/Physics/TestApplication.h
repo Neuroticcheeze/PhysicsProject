@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BaseApplication.h"
+#include "..\BaseApplication.h"
 
 // only needed for the camera picking
 #include <glm/vec3.hpp>

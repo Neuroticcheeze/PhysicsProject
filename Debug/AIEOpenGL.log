@@ -1,26 +1,12 @@
-﻿Build started 5/30/2016 11:12:03 PM.
-     1>Project "C:\Users\Jesse\Desktop\Educational Programming Work\College\Projects\PhysicsProject\AIEOpenGL.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt src\Gizmos.cpp
-         Gizmos.cpp
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Jesse\Desktop\Educational Programming Work\College\Projects\PhysicsProject\bin\AIEOpenGL_d.exe" /INCREMENTAL /NOLOGO opengl32.lib glfw3.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib LowLevelClothDEBUG.lib LowLevelDEBUG.lib PhysX3CharacterKinematicDEBUG_x86.lib PhysX3CommonDEBUG_x86.lib PhysX3CookingDEBUG_x86.lib PhysX3DEBUG_x86.lib PhysX3ExtensionsDEBUG.lib PhysX3VehicleDEBUG.lib PhysXProfileSDKDEBUG.lib PhysXVisualDebuggerSDKDEBUG.lib PvdRuntimeDEBUG.lib PxTaskDEBUG.lib SceneQueryDEBUG.lib SimulationControllerDEBUG.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Jesse\Desktop\Educational Programming Work\College\Projects\PhysicsProject\bin\AIEOpenGL_d.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Jesse\Desktop\Educational Programming Work\College\Projects\PhysicsProject\bin\AIEOpenGL_d.lib" /MACHINE:X86 Debug\BaseApplication.obj
-         Debug\Camera.obj
-         Debug\Gizmos.obj
-         Debug\gl_core_4_4.obj
-         Debug\main.obj
-         Debug\Collider.obj
-         Debug\IConstraint.obj
-         Debug\IPhysicsObject.obj
-         Debug\PhysicsScene.obj
-         Debug\PhysicsSceneRenderer.obj
-         Debug\Spring.obj
-         Debug\PhysX.obj
-         Debug\PhysXApplication.obj
-         Debug\TestApplication.obj
-         AIEOpenGL.vcxproj -> C:\Users\Jesse\Desktop\Educational Programming Work\College\Projects\PhysicsProject\bin\AIEOpenGL_d.exe
-     1>Done Building Project "C:\Users\Jesse\Desktop\Educational Programming Work\College\Projects\PhysicsProject\AIEOpenGL.vcxproj" (Build target(s)).
-
-Build succeeded.
-
-Time Elapsed 00:00:06.24
+﻿  TestApplication.cpp
+c:\users\jesse.farag\desktop\physicsproject\src\physics\physicsscene.h(52): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  c:\users\jesse.farag\desktop\physicsproject\src\physics\testapplication.cpp(135): note: see reference to function template instantiation 'T *Physics::PhysicsScene::CreateConstraint<Physics::Spring,Physics::IPhysicsObject*,Physics::IPhysicsObject*,int,int,float,float>(Physics::IPhysicsObject *,Physics::IPhysicsObject *,int,int,float,float)' being compiled
+          with
+          [
+              T=Physics::Spring
+          ]
+  PhysXApplication.cpp
+c:\users\jesse.farag\desktop\physicsproject\src\physx\physxapplication.cpp(89): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+c:\users\jesse.farag\desktop\physicsproject\src\physx\physxapplication.cpp(97): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
+  Generating Code...
+  AIEOpenGL.vcxproj -> C:\Users\jesse.farag\Desktop\PhysicsProject\bin\AIEOpenGL_d.exe

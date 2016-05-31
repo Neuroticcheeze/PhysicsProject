@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Collider.h"
+#include "ICollider.h"
 #include <glm\vec3.hpp>
 
 using glm::vec3;
@@ -9,11 +9,11 @@ using glm::vec3;
 #include "IPhysicsObject.h"
 namespace Physics
 {
-	class SphereCollider : public Collider
+	class SphereCollider : public ICollider
 	{
 	public:
 
-		SphereCollider(const float & p_radius = 0.0F, const vec3 & p_position = vec3(0)) : Collider(Type::SPHERE), m_position(p_position), m_radius(p_radius) {}
+		SphereCollider(const float & p_radius = 0.0F, const vec3 & p_position = vec3(0)) : ICollider(Type::SPHERE), m_position(p_position), m_radius(p_radius) {}
 
 		virtual ~SphereCollider() {}
 

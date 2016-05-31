@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Collider.h"
+#include "ICollider.h"
 #include <glm\vec3.hpp>
 
 using glm::vec3;
@@ -9,11 +9,11 @@ using glm::vec3;
 #include "IPhysicsObject.h"
 namespace Physics
 {
-	class PlaneCollider : public Collider
+	class PlaneCollider : public ICollider
 	{
 	public:
 
-		PlaneCollider(const vec3 & p_normal = vec3(0.0F, 1.0F, 0.0F), const float & p_distance = 0.0F) : Collider(Type::PLANE), m_normal(glm::normalize(p_normal)), m_distance(p_distance) {}
+		PlaneCollider(const vec3 & p_normal = vec3(0.0F, 1.0F, 0.0F), const float & p_distance = 0.0F) : ICollider(Type::PLANE), m_normal(glm::normalize(p_normal)), m_distance(p_distance) {}
 
 		virtual ~PlaneCollider() {}
 

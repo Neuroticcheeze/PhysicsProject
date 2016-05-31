@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Collider.h"
+#include "ICollider.h"
 
 #include <vector>
 #include <glm\vec3.hpp>
@@ -83,7 +83,7 @@ namespace Physics
 		{
 			IPhysicsObject *m_partner1;
 			IPhysicsObject *m_partner2;
-			Collider::IntersectInfo m_intersectInfo;
+			ICollider::IntersectInfo m_intersectInfo;
 		};
 
 		std::vector<IPhysicsObject *> m_physicsObjects;

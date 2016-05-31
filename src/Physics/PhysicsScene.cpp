@@ -4,7 +4,7 @@
 
 #include "SphereCollider.h"
 
-#include "Collider.h"
+#include "ICollider.h"
 
 #include <algorithm>
 
@@ -43,29 +43,9 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 	{
 		IPhysicsObject *obj = (*iter);
 
-		obj->ApplyForce(m_gravity * obj->GetMass());
+		obj->SetAcceleration(obj->GetAcceleration() + m_gravity * obj->GetMass());
 
 		obj->Update(p_deltaTime);
-
-		////-----------Temporary collision-----------
-
-		const Collider * col = obj->GetCollider();
-		const vec3 & pos = obj->GetPosition();
-		const vec3 & vel = obj->GetVelocity();
-
-		if (col != nullptr && col->GetType() == Collider::Type::SPHERE)
-		{
-			float k = ((SphereCollider*)col)->GetRadius();
-
-			if (pos.y < k)//On the ground
-			{
-
-				obj->ApplyForce(-obj->GetVelocity() * obj->GetDampening());
-
-				obj->SetPosition(vec3(pos.x, k, pos.z));
-				obj->SetVelocity(vec3(vel.x, -vel.y * obj->GetBounciness(), vel.z));
-			}
-		}
 	}
 
 	DetectCollisions();
@@ -75,7 +55,7 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 	{
 		IPhysicsObject *obj = (*iter);
 
-		if (glm::distance(obj->GetPosition(), obj->GetPositionDelta()) < 0.00001F)
+		if (glm::distance(obj->GetPosition(), obj->GetPositionDelta()) < 0.0002F)
 		{
 			obj->Sleep();
 		}
@@ -120,16 +100,6 @@ void PhysicsScene::DestroyPhysicsObject(IPhysicsObject *p_physicsObject)
 	if (iter != m_physicsObjects.end())
 	{
 		m_physicsObjects.erase(iter);
-	}
-
-	for (auto iter = m_constraints.begin(); iter != m_constraints.end(); ++iter)
-	{
-		IConstraint *con = (*iter);
-
-		if (con->GetObject1() == p_physicsObject || con->GetObject2() == p_physicsObject)
-		{
-			DestroyConstraint(con);
-		}
 	}
 
 	delete p_physicsObject;
@@ -177,9 +147,15 @@ void PhysicsScene::ResolveCollisions()
 	{
 		IPhysicsObject *obj1 = (*iter).m_partner1;
 		IPhysicsObject *obj2 = (*iter).m_partner2;
-		Collider::IntersectInfo &iinfo = (*iter).m_intersectInfo;
+		ICollider::IntersectInfo &iinfo = (*iter).m_intersectInfo;
 
-		vec3 collideNormal = -glm::normalize(iinfo.m_collisionVec);
+		vec3 collideNormal = glm::normalize(iinfo.m_collisionVec);
+
+		float friction = glm::min(obj1->GetFriction(), obj2->GetFriction());
+
+		if (!obj1->GetIsStatic()) obj1->ApplyForce(-obj1->GetVelocity() * friction);
+		if (!obj2->GetIsStatic()) obj2->ApplyForce(-obj2->GetVelocity() * friction);
+
 		vec3 relVel = obj2->GetVelocity() - obj1->GetVelocity();
 
 		float velAlongNormal = glm::dot(relVel, collideNormal);
@@ -196,5 +172,11 @@ void PhysicsScene::ResolveCollisions()
 
 		if (!obj1->GetIsStatic()) obj1->SetVelocity(obj1->GetVelocity() - obj1->GetInverseMass() * impulse);
 		if (!obj2->GetIsStatic()) obj2->SetVelocity(obj2->GetVelocity() + obj2->GetInverseMass() * impulse);
+
+		const float k_slop = 0.001f; // Penetration allowance
+		const float percent = 0.999f; // Penetration percentage to correct
+		vec3 correction = (glm::max(iinfo.m_pushFactor * 0.333F - k_slop, 0.0f) / (obj1->GetInverseMass() + obj2->GetInverseMass())) * percent * collideNormal;
+		obj1->SetPosition(obj1->GetPosition() - obj1->GetInverseMass() * correction);
+		obj2->SetPosition(obj2->GetPosition() + obj2->GetInverseMass() * correction);
 	}
 }
