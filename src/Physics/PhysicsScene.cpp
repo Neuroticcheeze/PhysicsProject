@@ -56,7 +56,7 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 	{
 		IPhysicsObject *obj = (*iter);
 
-		if (glm::distance(obj->GetPosition(), obj->GetPositionDelta()) < 0.0002F)
+		if (glm::distance(obj->GetPosition(), obj->GetPositionDelta()) < 0.01F)
 		{
 			obj->Sleep();
 		}
@@ -186,9 +186,9 @@ void PhysicsScene::ResolveCollisions(float p_deltaTime)
 		if (!obj1->GetIsStatic()) obj1->SetVelocity(obj1->GetVelocity() - obj1->GetInverseMass() * impulse);
 		if (!obj2->GetIsStatic()) obj2->SetVelocity(obj2->GetVelocity() + obj2->GetInverseMass() * impulse);
 
-		const float k_slop = 0.001f; // Penetration allowance
-		const float percent = 0.999f; // Penetration percentage to correct
-		vec3 correction = (glm::max(iinfo.m_pushFactor * 0.333F - k_slop, 0.0f) / (obj1->GetInverseMass() + obj2->GetInverseMass())) * percent * collideNormal;
+		const float k_slop = 0.01f; // Penetration allowance
+		const float percent = 0.99f; // Penetration percentage to correct
+		vec3 correction = (glm::max(iinfo.m_pushFactor * 1.0F - k_slop, 0.0f) / (obj1->GetInverseMass() + obj2->GetInverseMass())) * percent * collideNormal;
 		
 		if (!obj1->GetIsStatic()) obj1->SetPosition(obj1->GetPosition() - obj1->GetInverseMass() * correction);
 		if (!obj2->GetIsStatic()) obj2->SetPosition(obj2->GetPosition() + obj2->GetInverseMass() * correction);

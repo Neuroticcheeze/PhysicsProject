@@ -1,21 +1,4 @@
-﻿  TestApplication.cpp
-  PhysXApplication.cpp
-c:\users\jesse.farag\desktop\physicsproject\src\physx\physxapplication.cpp(89): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-c:\users\jesse.farag\desktop\physicsproject\src\physx\physxapplication.cpp(97): warning C4244: 'argument': conversion from 'int' to 'const float', possible loss of data
-  PhysX.cpp
-  Spring.cpp
-  PhysicsSceneRenderer.cpp
-  PhysicsScene.cpp
-  IPhysicsObject.cpp
-  IConstraint.cpp
-  ICollider.cpp
-  ICloth.cpp
-  main.cpp
-  Gizmos.cpp
-  Camera.cpp
-  BaseApplication.cpp
-  Generating Code...
-  gl_core_4_4.c
+﻿  ICollider.cpp
 glfw3.lib(context.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(context.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
 glfw3.lib(init.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(init.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info
 glfw3.lib(input.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(input.obj)' or at 'C:\Users\jesse.farag\Desktop\PhysicsProject\bin\glfw.pdb'; linking object as if no debug info

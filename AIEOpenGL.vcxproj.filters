@@ -111,5 +111,6 @@
     </ClInclude>
     <ClInclude Include="src\Physics\ICloth.h" />
     <ClInclude Include="src\Physics\PointCollider.h" />
+    <ClInclude Include="src\Physics\AABBCollider.h" />
   </ItemGroup>
 </Project>

@@ -17,14 +17,14 @@ namespace Physics
 			PhysicsScene * p_scene,
 			PhysicsSceneRenderer * p_renderer = nullptr,
 			const unsigned int & p_nodeWidth = 10, 
-			const unsigned int & p_nodeHeight = 20, 
+			const unsigned int & p_nodeHeight = 10, 
 			const float & p_fabricLength = 2.0F, 
 			const float & p_fabricStiffness = 100.0F, 
-			const float & p_fabricFriction = 0.7F, 
+			const float & p_fabricFriction = 0.9F, 
 			const float & p_fabricStrength = 1500.0F, 
-			const float & p_mass = 0.5F, 
+			const float & p_mass = 2.0F, 
 			const float & p_bounciness = 0.1F, 
-			const float & p_friction = 70.0F);
+			const float & p_friction = 30.0F);
 
 		virtual ~ICloth();
 

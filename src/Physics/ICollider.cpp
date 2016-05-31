@@ -175,13 +175,13 @@ bool ICollider::PointToPlaneIntersect(PointCollider *p_col1, PlaneCollider *p_co
 
 	float d = glm::dot(planeNormal, p_col1->GetPosition()) - plane.w;
 
-	if (d < 0.2F)
+	if (d < 0.1F)
 	{
 		// Intersecting
 		if (iinfo != nullptr)
 		{
 			iinfo->m_collisionVec = planeNormal;
-			iinfo->m_pushFactor = 0.2F;
+			iinfo->m_pushFactor = 0.1F;
 		}
 
 		return true;
