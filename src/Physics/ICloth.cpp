@@ -15,9 +15,11 @@ using namespace Physics;
 ICloth::ICloth(
 	PhysicsScene * p_scene,
 	PhysicsSceneRenderer * p_renderer,
+	const vec3 & p_position,
 	const unsigned int & p_nodeWidth,
 	const unsigned int & p_nodeHeight,
 	const float & p_fabricLength,
+	const float & p_fabricLengthLimit,
 	const float & p_fabricStiffness,
 	const float & p_fabricFriction,
 	const float & p_fabricStrength,
@@ -52,7 +54,7 @@ ICloth::ICloth(
 			obj->SetMass(p_mass);
 			obj->SetBounciness(p_bounciness);
 			obj->SetFriction(p_friction);
-			obj->SetPosition(vec3(x * p_fabricLength, y * p_fabricLength, 0));
+			obj->SetPosition(vec3(x * p_fabricLength, y * p_fabricLength, 0) + p_position);
 
 			if (p_renderer != nullptr)
 				p_renderer->GetRenderInfo(obj).m_colour = vec4(glm::ballRand(0.5F) + 0.5F, 0.0F);
@@ -67,7 +69,7 @@ ICloth::ICloth(
 			auto obj0 = (*(m_nodes + x + y * m_width));
 			auto obj1 = (*(m_nodes + x + (y + 1) * m_width));
 
-			(*(m_strands + y)) = p_scene->CreateConstraint<Physics::Spring>(obj0, obj1, p_fabricLength, p_fabricStiffness, p_fabricFriction, p_fabricStrength);
+			(*(m_strands + y)) = p_scene->CreateConstraint<Physics::Spring>(obj0, obj1, p_fabricLength, p_fabricLengthLimit, p_fabricStiffness, p_fabricFriction, p_fabricStrength);
 		}
 	}
 
@@ -79,7 +81,7 @@ ICloth::ICloth(
 			auto obj0 = (*(m_nodes + x + y * m_width));
 			auto obj1 = (*(m_nodes + (x + 1) + y * m_width));
 
-			(*(m_strands + y)) = p_scene->CreateConstraint<Physics::Spring>(obj0, obj1, p_fabricLength, p_fabricStiffness, p_fabricFriction, p_fabricStrength);
+			(*(m_strands + y)) = p_scene->CreateConstraint<Physics::Spring>(obj0, obj1, p_fabricLength, p_fabricLengthLimit, p_fabricStiffness, p_fabricFriction, p_fabricStrength);
 		}
 	}
 }

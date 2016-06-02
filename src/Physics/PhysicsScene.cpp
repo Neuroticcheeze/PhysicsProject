@@ -36,7 +36,7 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 
 		if (!con->Destroyed())
 		{
-			con->Contstrain(this);
+			con->Contstrain(this, p_deltaTime);
 		}
 	}
 
@@ -44,7 +44,7 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 	{
 		IPhysicsObject *obj = (*iter);
 
-		obj->SetAcceleration(obj->GetAcceleration() + m_gravity * obj->GetMass());
+		if (!obj->GetIsStatic()) obj->SetAcceleration(obj->GetAcceleration() + m_gravity * obj->GetMass());
 
 		obj->Update(p_deltaTime);
 	}
@@ -56,7 +56,7 @@ void PhysicsScene::Simulate(const float &p_deltaTime)
 	{
 		IPhysicsObject *obj = (*iter);
 
-		if (glm::distance(obj->GetPosition(), obj->GetPositionDelta()) < 0.01F)
+		if (glm::distance(obj->GetPosition(), obj->GetPositionDelta()) < 0.00001F)
 		{
 			obj->Sleep();
 		}
@@ -166,8 +166,8 @@ void PhysicsScene::ResolveCollisions(float p_deltaTime)
 
 		float friction = glm::min(obj1->GetFriction(), obj2->GetFriction());
 
-		if (!obj1->GetIsStatic()) obj1->ApplyForce(-obj1->GetVelocity() * friction);
-		if (!obj2->GetIsStatic()) obj2->ApplyForce(-obj2->GetVelocity() * friction);
+		if (!obj1->GetIsStatic()) obj1->ApplyForce(-obj1->GetVelocity() * friction * p_deltaTime * 16.667F);
+		if (!obj2->GetIsStatic()) obj2->ApplyForce(-obj2->GetVelocity() * friction * p_deltaTime * 16.667F);
 
 		vec3 relVel = obj2->GetVelocity() - obj1->GetVelocity();
 
@@ -183,14 +183,13 @@ void PhysicsScene::ResolveCollisions(float p_deltaTime)
 
 		vec3 impulse = impulseLen * collideNormal;
 
+
+		vec3 correction = iinfo.m_pushFactor * collideNormal;
+
+		if (!obj1->GetIsStatic()) obj1->SetPosition(obj1->GetPosition() - correction);
+		if (!obj2->GetIsStatic()) obj2->SetPosition(obj2->GetPosition() + correction);
+
 		if (!obj1->GetIsStatic()) obj1->SetVelocity(obj1->GetVelocity() - obj1->GetInverseMass() * impulse);
 		if (!obj2->GetIsStatic()) obj2->SetVelocity(obj2->GetVelocity() + obj2->GetInverseMass() * impulse);
-
-		const float k_slop = 0.01f; // Penetration allowance
-		const float percent = 0.99f; // Penetration percentage to correct
-		vec3 correction = (glm::max(iinfo.m_pushFactor * 1.0F - k_slop, 0.0f) / (obj1->GetInverseMass() + obj2->GetInverseMass())) * percent * collideNormal;
-		
-		if (!obj1->GetIsStatic()) obj1->SetPosition(obj1->GetPosition() - obj1->GetInverseMass() * correction);
-		if (!obj2->GetIsStatic()) obj2->SetPosition(obj2->GetPosition() + obj2->GetInverseMass() * correction);
 	}
 }

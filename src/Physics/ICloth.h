@@ -16,15 +16,17 @@ namespace Physics
 		ICloth(
 			PhysicsScene * p_scene,
 			PhysicsSceneRenderer * p_renderer = nullptr,
+			const vec3 & p_position = vec3(0, 0, 0),
 			const unsigned int & p_nodeWidth = 10, 
 			const unsigned int & p_nodeHeight = 10, 
-			const float & p_fabricLength = 2.0F, 
-			const float & p_fabricStiffness = 87.5F, 
-			const float & p_fabricFriction = 0.2F, 
-			const float & p_fabricStrength = 2500.0F, 
-			const float & p_mass = 1.5F, 
-			const float & p_bounciness = 0.1F, 
-			const float & p_friction = 5.0F);
+			const float & p_fabricLength = 1.0F, 
+			const float & p_fabricLengthLimit = 2.0F,
+			const float & p_fabricStiffness = 200.0F, 
+			const float & p_fabricFriction = 10.5F, 
+			const float & p_fabricStrength = 2000.0F, 
+			const float & p_mass = 1.25F, 
+			const float & p_bounciness = 0.4F, 
+			const float & p_friction = 2.0F);
 
 		virtual ~ICloth();
 

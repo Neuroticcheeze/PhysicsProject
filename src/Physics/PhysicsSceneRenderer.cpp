@@ -9,6 +9,7 @@
 
 #include "SphereCollider.h"
 #include "PlaneCollider.h"
+#include "AABBCollider.h"
 #include "ICollider.h"
 
 #include "..\Camera.h"
@@ -153,6 +154,15 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 
 			Gizmos::addTri(corners[0], corners[1], corners[2], col);
 			Gizmos::addTri(corners[0], corners[2], corners[3], col);
+		}
+			break;
+
+		case ICollider::Type::AABB:
+		{
+			const vec3 & position = ((AABBCollider*)collider)->GetPosition();
+			const vec3 & extends = ((AABBCollider*)collider)->GetHalfExtents();
+
+			Gizmos::addAABBFilled(position, extends, col);
 		}
 			break;
 		}

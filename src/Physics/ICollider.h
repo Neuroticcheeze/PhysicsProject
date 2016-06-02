@@ -9,6 +9,7 @@ namespace Physics
 	class SphereCollider;
 	class PlaneCollider;
 	class PointCollider;
+	class AABBCollider;
 
 	class IPhysicsObject;
 
@@ -34,7 +35,10 @@ namespace Physics
 		static bool SphereToPlaneIntersect(SphereCollider *p_col1, PlaneCollider *p_col2, IntersectInfo *iinfo);
 		static bool SphereToPointIntersect(SphereCollider *p_col1, PointCollider *p_col2, IntersectInfo *iinfo);
 		static bool PointToPlaneIntersect(PointCollider *p_col1, PlaneCollider *p_col2, IntersectInfo *iinfo);
-		static bool AABBToSphereIntersect(SphereCollider *p_col1, SphereCollider *p_col2, IntersectInfo *iinfo);
+		static bool AABBToSphereIntersect(AABBCollider *p_col1, SphereCollider *p_col2, IntersectInfo *iinfo);
+		static bool AABBToPlaneIntersect(AABBCollider *p_col1, PlaneCollider *p_col2, IntersectInfo *iinfo);
+		static bool AABBToAABBIntersect(AABBCollider *p_col1, AABBCollider *p_col2, IntersectInfo *iinfo);
+		static bool AABBToPointIntersect(AABBCollider *p_col1, PointCollider *p_col2, IntersectInfo *iinfo);
 
 		static ICollider *GetNoneInstance();
 

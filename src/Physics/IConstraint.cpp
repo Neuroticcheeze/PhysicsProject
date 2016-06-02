@@ -30,6 +30,6 @@ IConstraint::~IConstraint()
 	}
 }
 
-void IConstraint::Contstrain(PhysicsScene * p_scene)
+void IConstraint::Contstrain(PhysicsScene * p_scene, const float & p_deltaTime)
 {
 }
