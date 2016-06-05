@@ -54,12 +54,6 @@
     <ClInclude Include="src\PhysX\PhysXRagdoll.h" />
     <ClInclude Include="src\tiny_obj_loader.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Object Include="objs\complex_shape.obj" />
-    <Object Include="objs\complex_shape_blob.obj" />
-    <Object Include="objs\complex_shape_torus.obj" />
-    <Object Include="objs\pine.obj" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{63494F4E-79FA-48AD-AA6C-BDF1FF1619FD}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
