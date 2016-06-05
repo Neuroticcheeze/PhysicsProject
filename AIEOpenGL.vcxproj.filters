@@ -62,6 +62,15 @@
     <ClCompile Include="src\Physics\ICloth.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\PhysX\PhysXRagdoll.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PhysX\ParticleEmitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PhysX\ParticleFluidEmitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\gl_core_4_4.h">
@@ -112,5 +121,15 @@
     <ClInclude Include="src\Physics\ICloth.h" />
     <ClInclude Include="src\Physics\PointCollider.h" />
     <ClInclude Include="src\Physics\AABBCollider.h" />
+    <ClInclude Include="src\tiny_obj_loader.h" />
+    <ClInclude Include="src\PhysX\PhysXRagdoll.h" />
+    <ClInclude Include="src\PhysX\ParticleEmitter.h" />
+    <ClInclude Include="src\PhysX\ParticleFluidEmitter.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="objs\pine.obj" />
+    <Object Include="objs\complex_shape.obj" />
+    <Object Include="objs\complex_shape_blob.obj" />
+    <Object Include="objs\complex_shape_torus.obj" />
   </ItemGroup>
 </Project>

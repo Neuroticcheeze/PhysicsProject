@@ -3,8 +3,6 @@
 #include "PhysicsScene.h"
 #include "PhysicsSceneRenderer.h"
 #include "PointCollider.h"
-#include "SphereCollider.h"
-
 
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>

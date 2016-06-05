@@ -14,12 +14,29 @@ using std::string;
 #include <PxScene.h>
 #include <pvd/PxVisualDebugger.h>
 
+#include "PhysXRagdoll.h"
+#include "ParticleEmitter.h"
+#include "ParticleFluidEmitter.h"
+
 #include <glm\mat4x4.hpp>
 using glm::mat4;
 using glm::vec4;
 
+#include "..\Gizmos.h"
+
 namespace MyPhysX
 {
+	struct PhysXFilter
+	{
+		enum Types
+		{
+			eNONE = (0),
+			ePLAYER = (1 << 0),
+			ePLATFORM = (1 << 1),
+			eGROUND = (1 << 2),
+		};
+	};
+
 	class MyAllocator : public physx::PxAllocatorCallback
 	{
 	public:
@@ -40,16 +57,30 @@ namespace MyPhysX
 		friend class PhysXSystem;
 
 	public:
+
+
+		class MyCollisionCallBack;
+
 		PhysXObject();
 		~PhysXObject();
 		void Destroy(PhysXSystem & p_sys);
 		void Update();
 
+		inline physx::PxRigidActor * GetActor() { return m_dynamicActor != nullptr ? static_cast<physx::PxRigidActor *>(m_dynamicActor) : static_cast<physx::PxRigidActor *>(m_staticActor); }
+		inline bool GetIsTriggerActive() { return m_isTriggerActive; }
+		inline Gizmos::GizmoMesh GetPotentialMesh() { return m_potMesh; }
+		inline Gizmos::GizmoMesh GetImposterMesh() { return m_impMesh; }
+
 	private:
 
-		physx::PxRigidDynamic * m_actor;
+		physx::PxRigidStatic * m_staticActor;
+		physx::PxRigidDynamic * m_dynamicActor;
+
+		bool m_isTrigger, m_isTriggerActive;
 
 		mat4 m_transform;
+
+		Gizmos::GizmoMesh m_potMesh, m_impMesh;
 	};
 
 	class PhysXSystem
@@ -64,7 +95,11 @@ namespace MyPhysX
 		void AddMaterial(const char * p_name, const physx::PxReal & p_sf, const physx::PxReal & p_df, const physx::PxReal & p_rt);
 		physx::PxMaterial * GetMaterial(const char * p_name);
 
-		void Add(const char * p_material, const float & p_density, const physx::PxGeometry & p_geometry, physx::PxVec3 p_pos, physx::PxQuat p_rot);
+		void Add(const char* p_name, physx::PxU32 p_filterGroup, physx::PxU32 p_filterMask, const char * p_material, const float & p_density, const physx::PxGeometry & p_geometry, physx::PxVec3 p_pos, physx::PxQuat p_rot, const bool & p_isStatic = false, const bool & p_isTrigger = false, Gizmos::GizmoMesh * p_potMesh = nullptr, Gizmos::GizmoMesh * p_impMesh = nullptr);
+
+		void AddArticulation(RagdollNode ** p_ragdollData, const float & p_scaleFactor, const char * p_material, physx::PxVec3 p_pos, physx::PxQuat p_rot);
+
+		physx::PxConvexMesh * GenerateConvexHullMesh(vector<float> p_inVertices, vector<float> & p_outVertices, vector<unsigned int> & p_outIndices, const unsigned char & p_targetVerts = 128);
 
 		void Clear();
 
@@ -90,6 +125,7 @@ namespace MyPhysX
 	private:
 
 		vector<PhysXObject * > m_physicsObjects;
+		vector<physx::PxArticulation * > m_articulations;
 		unordered_map<string, physx::PxMaterial *> m_materials;
 
 		physx::PxFoundation* g_PhysicsFoundation;

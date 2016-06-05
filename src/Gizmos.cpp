@@ -6,9 +6,15 @@
 
 Gizmos* Gizmos::sm_singleton = nullptr;
 
-Gizmos::Gizmos(unsigned int a_maxLines, unsigned int a_maxTris,
+Gizmos::Gizmos(unsigned int a_maxPoints, unsigned int a_maxMeshes, unsigned int a_maxLines, unsigned int a_maxTris,
 			   unsigned int a_max2DLines, unsigned int a_max2DTris)
-	: m_maxLines(a_maxLines),
+	: m_maxPoints(a_maxPoints),
+	m_pointCount(0),
+	m_points(new GizmoVertex[a_maxPoints]), 
+	m_maxMeshes(a_maxMeshes),
+	m_meshCount(0),
+	m_meshes(new GizmoMesh[a_maxMeshes]),
+	m_maxLines(a_maxLines),
 	m_lineCount(0),
 	m_lines(new GizmoLine[a_maxLines]),
 	m_maxTris(a_maxTris),
@@ -28,12 +34,14 @@ Gizmos::Gizmos(unsigned int a_maxLines, unsigned int a_maxTris,
 					 in vec4 Colour; \
 					 out vec4 vColour; \
 					 uniform mat4 ProjectionView; \
-					 void main() { vColour = Colour; gl_Position = ProjectionView * Position; }";
+					 uniform mat4 Model; \
+					 void main() { vColour = Colour; gl_Position = ProjectionView * Model * Position; }";
 
 	const char* fsSource = "#version 150\n \
 					 in vec4 vColour; \
+					 uniform vec4 Colour;\
                      out vec4 FragColor; \
-					 void main()	{ FragColor = vColour; }";
+					 void main()	{ FragColor = vColour * Colour; }";
     
     
 	unsigned int vs = glCreateShader(GL_VERTEX_SHADER);
@@ -69,6 +77,10 @@ Gizmos::Gizmos(unsigned int a_maxLines, unsigned int a_maxTris,
 	glDeleteShader(fs);
     
     // create VBOs
+	glGenBuffers(1, &m_pointVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_pointVBO);
+	glBufferData(GL_ARRAY_BUFFER, m_maxPoints * sizeof(GizmoVertex), m_points, GL_DYNAMIC_DRAW);
+
 	glGenBuffers( 1, &m_lineVBO );
 	glBindBuffer(GL_ARRAY_BUFFER, m_lineVBO);
 	glBufferData(GL_ARRAY_BUFFER, m_maxLines * sizeof(GizmoLine), m_lines, GL_DYNAMIC_DRAW);
@@ -88,6 +100,14 @@ Gizmos::Gizmos(unsigned int a_maxLines, unsigned int a_maxTris,
 	glGenBuffers( 1, &m_2DtriVBO );
 	glBindBuffer(GL_ARRAY_BUFFER, m_2DtriVBO);
 	glBufferData(GL_ARRAY_BUFFER, m_max2DTris * sizeof(GizmoTri), m_2Dtris, GL_DYNAMIC_DRAW);
+
+	glGenVertexArrays(1, &m_pointVAO);
+	glBindVertexArray(m_pointVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_pointVBO);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(GizmoVertex), 0);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(GizmoVertex), ((char*)0) + 16);
 
 	glGenVertexArrays(1, &m_lineVAO);
 	glBindVertexArray(m_lineVAO);
@@ -134,6 +154,8 @@ Gizmos::Gizmos(unsigned int a_maxLines, unsigned int a_maxTris,
 }
 
 Gizmos::~Gizmos() {
+	delete[] m_points;
+	delete[] m_meshes;
 	delete[] m_lines;
 	delete[] m_tris;
 	delete[] m_transparentTris;
@@ -152,10 +174,10 @@ Gizmos::~Gizmos() {
 	glDeleteProgram(m_shader);
 }
 
-void Gizmos::create(unsigned int a_maxLines /* = 0xffff */, unsigned int a_maxTris /* = 0xffff */,
+void Gizmos::create(unsigned int a_maxPoints /* = 0xffff */, unsigned int a_maxMeshes /* = 0xffff */, unsigned int a_maxLines /* = 0xffff */, unsigned int a_maxTris /* = 0xffff */,
 					unsigned int a_max2DLines /* = 0xff */, unsigned int a_max2DTris /* = 0xff */) {
 	if (sm_singleton == nullptr)
-		sm_singleton = new Gizmos(a_maxLines,a_maxTris,a_max2DLines,a_max2DTris);
+		sm_singleton = new Gizmos(a_maxPoints, a_maxMeshes,a_maxLines,a_maxTris,a_max2DLines,a_max2DTris);
 }
 
 void Gizmos::destroy() {
@@ -164,11 +186,34 @@ void Gizmos::destroy() {
 }
 
 void Gizmos::clear() {
+	sm_singleton->m_pointCount = 0;
 	sm_singleton->m_lineCount = 0;
 	sm_singleton->m_triCount = 0;
 	sm_singleton->m_transparentTriCount = 0;
 	sm_singleton->m_2DlineCount = 0;
 	sm_singleton->m_2DtriCount = 0;
+	sm_singleton->m_meshCount = 0;
+}
+
+// Adds a single debug mesh
+void Gizmos::addMesh(GizmoMesh a_mesh, const glm::vec3& a_center,
+	const glm::vec4& a_colour, const glm::mat4* a_transform, const float & p_lineWidth)
+{
+	if (sm_singleton != nullptr &&
+		sm_singleton->m_meshCount < sm_singleton->m_maxMeshes)
+	{
+		a_mesh.m_colour = a_colour;
+		a_mesh.m_center = a_center;
+		a_mesh.m_lineWidth = p_lineWidth;
+		
+		if (a_transform != nullptr)
+			a_mesh.m_matrix = glm::mat4(*a_transform);
+		else
+			a_mesh.m_matrix = glm::mat4(1.0F);
+		
+		sm_singleton->m_meshes[sm_singleton->m_meshCount] = a_mesh;
+		sm_singleton->m_meshCount++;
+	}
 }
 
 // Adds 3 unit-length lines (red,green,blue) representing the 3 axis of a transform, 
@@ -606,6 +651,24 @@ void Gizmos::addHermiteSpline(const glm::vec3& a_start, const glm::vec3& a_end,
 	}
 }
 
+void Gizmos::addPoint(const glm::vec3& a_pos, const glm::vec4& a_colour)
+{
+	if (sm_singleton != nullptr &&
+		sm_singleton->m_pointCount < sm_singleton->m_maxPoints)
+	{
+		sm_singleton->m_points[sm_singleton->m_pointCount].x = a_pos.x;
+		sm_singleton->m_points[sm_singleton->m_pointCount].y = a_pos.y;
+		sm_singleton->m_points[sm_singleton->m_pointCount].z = a_pos.z;
+		sm_singleton->m_points[sm_singleton->m_pointCount].w = 1;
+		sm_singleton->m_points[sm_singleton->m_pointCount].r = a_colour.r;
+		sm_singleton->m_points[sm_singleton->m_pointCount].g = a_colour.g;
+		sm_singleton->m_points[sm_singleton->m_pointCount].b = a_colour.b;
+		sm_singleton->m_points[sm_singleton->m_pointCount].a = a_colour.a;
+
+		sm_singleton->m_pointCount++;
+	}
+}
+
 void Gizmos::addLine(const glm::vec3& a_rv0,  const glm::vec3& a_rv1, const glm::vec4& a_colour) {
 	addLine(a_rv0,a_rv1,a_colour,a_colour);
 }
@@ -858,7 +921,7 @@ void Gizmos::draw(const glm::mat4& a_projectionView) {
 		
 		unsigned int projectionViewUniform = glGetUniformLocation(sm_singleton->m_shader,"ProjectionView");
 		glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(a_projectionView));
-
+		
 		if (sm_singleton->m_lineCount > 0)
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, sm_singleton->m_lineVBO);
@@ -898,6 +961,97 @@ void Gizmos::draw(const glm::mat4& a_projectionView) {
 
 			glBindVertexArray(sm_singleton->m_transparentTriVAO);
 			glDrawArrays(GL_TRIANGLES, 0, sm_singleton->m_transparentTriCount * 3);
+
+			// reset state
+			glDepthMask(depthMask);
+			glBlendFunc(src, dst);
+			if (blendEnabled == GL_FALSE)
+				glDisable(GL_BLEND);
+		}
+
+		unsigned int colourUniform = glGetUniformLocation(sm_singleton->m_shader, "Colour");
+		unsigned int modelViewUniform = glGetUniformLocation(sm_singleton->m_shader, "Model");
+		if (sm_singleton->m_meshCount > 0)
+		{
+			for (int n = 0; n < sm_singleton->m_meshCount; ++n)
+			{
+				auto & mesh = sm_singleton->m_meshes[n];
+
+				glLineWidth(mesh.m_lineWidth);
+			
+				glUniformMatrix4fv(modelViewUniform, 1, false, glm::value_ptr(glm::translate(mesh.m_center) * mesh.m_matrix));
+				glBindVertexArray(mesh.m_vao);
+
+				glUniform4f(colourUniform, 1, 1, 1, 1);
+				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+				glDrawElements(GL_TRIANGLES, mesh.m_indices.size(), GL_UNSIGNED_INT, 0);
+
+
+				GLboolean blendEnabled;
+				GLboolean depthMask;
+				int src, dst;
+								
+				if (mesh.m_colour.a < 1.0F)
+				{
+					// not ideal to store these, but Gizmos must work stand-alone
+					blendEnabled = glIsEnabled(GL_BLEND);
+					depthMask = GL_TRUE;
+					glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
+					glGetIntegerv(GL_BLEND_SRC, &src);
+					glGetIntegerv(GL_BLEND_DST, &dst);
+
+					// setup blend states
+					if (blendEnabled == GL_FALSE)
+						glEnable(GL_BLEND);
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+					glDepthMask(GL_FALSE);
+				}
+
+				glUniform4f(colourUniform, mesh.m_colour.r, mesh.m_colour.g, mesh.m_colour.b, mesh.m_colour.a);
+				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				glDrawElements(GL_TRIANGLES, mesh.m_indices.size(), GL_UNSIGNED_INT, 0);
+
+				if (mesh.m_colour.a < 1.0F)
+				{// reset state
+					glDepthMask(depthMask);
+					glBlendFunc(src, dst);
+					if (blendEnabled == GL_FALSE)
+						glDisable(GL_BLEND);
+				}
+
+			}
+		}
+
+		//Reset the line width
+		glLineWidth(1);
+
+		//Reset the modelView matrix to an identity
+		glUniformMatrix4fv(modelViewUniform, 1, false, glm::value_ptr(glm::mat4(1.0F)));
+
+		//Set the colour to white
+		glUniform4f(colourUniform, 1, 1, 1, 1);
+
+		if (sm_singleton->m_pointCount > 0)
+		{
+			// not ideal to store these, but Gizmos must work stand-alone
+			GLboolean blendEnabled = glIsEnabled(GL_BLEND);
+			GLboolean depthMask = GL_TRUE;
+			glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
+			int src, dst;
+			glGetIntegerv(GL_BLEND_SRC, &src);
+			glGetIntegerv(GL_BLEND_DST, &dst);
+
+			// setup blend states
+			if (blendEnabled == GL_FALSE)
+				glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glDepthMask(GL_FALSE);
+
+			glBindBuffer(GL_ARRAY_BUFFER, sm_singleton->m_pointVBO);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sm_singleton->m_pointCount * sizeof(GizmoVertex), sm_singleton->m_points);
+
+			glBindVertexArray(sm_singleton->m_pointVAO);
+			glDrawArrays(GL_POINTS, 0, sm_singleton->m_pointCount);
 
 			// reset state
 			glDepthMask(depthMask);

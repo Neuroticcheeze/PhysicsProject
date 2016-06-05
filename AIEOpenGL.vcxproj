@@ -23,9 +23,12 @@
     <ClCompile Include="src\Physics\PhysicsScene.cpp" />
     <ClCompile Include="src\Physics\PhysicsSceneRenderer.cpp" />
     <ClCompile Include="src\Physics\Spring.cpp" />
+    <ClCompile Include="src\PhysX\ParticleEmitter.cpp" />
+    <ClCompile Include="src\PhysX\ParticleFluidEmitter.cpp" />
     <ClCompile Include="src\PhysX\PhysX.cpp" />
     <ClCompile Include="src\PhysX\PhysXApplication.cpp" />
     <ClCompile Include="src\Physics\TestApplication.cpp" />
+    <ClCompile Include="src\PhysX\PhysXRagdoll.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\BaseApplication.h" />
@@ -43,9 +46,19 @@
     <ClInclude Include="src\Physics\PointCollider.h" />
     <ClInclude Include="src\Physics\SphereCollider.h" />
     <ClInclude Include="src\Physics\Spring.h" />
+    <ClInclude Include="src\PhysX\ParticleEmitter.h" />
+    <ClInclude Include="src\PhysX\ParticleFluidEmitter.h" />
     <ClInclude Include="src\PhysX\PhysX.h" />
     <ClInclude Include="src\PhysX\PhysXApplication.h" />
     <ClInclude Include="src\Physics\TestApplication.h" />
+    <ClInclude Include="src\PhysX\PhysXRagdoll.h" />
+    <ClInclude Include="src\tiny_obj_loader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="objs\complex_shape.obj" />
+    <Object Include="objs\complex_shape_blob.obj" />
+    <Object Include="objs\complex_shape_torus.obj" />
+    <Object Include="objs\pine.obj" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{63494F4E-79FA-48AD-AA6C-BDF1FF1619FD}</ProjectGuid>
@@ -89,8 +102,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir)dep/glm;$(SolutionDir)dep/glfw-3.1.2/include;$(SolutionDir)dep/stb-master;$(SolutionDir)dep/imgui;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(SolutionDir)dep/glfw-3.1.2/src/$(Configuration);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+    <IncludePath>$(SolutionDir)dep/physx/inc;$(SolutionDir)dep/glm;$(SolutionDir)dep/glfw-3.1.2/include;$(SolutionDir)dep/stb-master;$(SolutionDir)dep/imgui;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(SolutionDir)dep/physx/lib;$(SolutionDir)dep/glfw-3.1.2/src/$(Configuration);$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
     <OutDir>$(SolutionDir)bin\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

@@ -32,7 +32,7 @@ bool BaseApplication::createWindow(const char* title, int width, int height) {
 	glClearColor(0.55F, 0.7F, 1.0F, 1);
 
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	
 	return true;
 }

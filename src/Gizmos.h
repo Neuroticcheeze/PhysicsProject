@@ -1,11 +1,77 @@
 #pragma once
 
-#include <glm/fwd.hpp>
+#define GLM_SWIZZLE 
+#include <glm\mat4x4.hpp>
+#include <glm/glm.hpp>
+#include "gl_core_4_4.h"
+#include <vector>
+using std::vector;
 
 class Gizmos {
+private:
+
+	struct GizmoVertex;
+
 public:
 
-	static void		create(unsigned int a_maxLines = 0xffff, unsigned int a_maxTris = 0xffff,
+	struct GizmoMesh
+	{
+		friend class Gizmos;
+
+	private:
+
+		glm::vec4 m_colour;
+		glm::vec3 m_center;
+		glm::mat4 m_matrix;
+
+		float m_lineWidth;
+
+		vector<float> m_vertices;
+		vector<unsigned int> m_indices;
+
+		unsigned int m_vbo, m_vao, m_ibo;
+
+	public:
+		//Vertex structure must be exactly x/y/z/r/g/b/a. Note, r/g/b/a is not used.Colour is set on Gizmos::addMesh(...)
+		void Create(const vector<float> & p_vertices, const vector<unsigned int> & p_indices)
+		{
+			m_vertices = p_vertices;
+			m_indices = p_indices;
+
+			glGenVertexArrays(1, &m_vao); // Create our Vertex Array Object  
+			glBindVertexArray(m_vao); // Bind our Vertex Array Object so we can use it  
+
+			glGenBuffers(1, &m_vbo); // Generate our Vertex Buffer Object  
+			glBindBuffer(GL_ARRAY_BUFFER, m_vbo); // Bind our Vertex Buffer Object  
+			glBufferData(GL_ARRAY_BUFFER, p_vertices.size() * sizeof(float), p_vertices.data(), GL_STATIC_DRAW); // Set the size and data of our VBO and set it to STATIC_DRAW  
+																													   //We could have actually made one big IBO for both the quad and triangle.
+			glGenBuffers(1, &m_ibo);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ibo);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, p_indices.size() * sizeof(unsigned int), p_indices.data(), GL_STATIC_DRAW);
+
+			glEnableVertexAttribArray(0);
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(GizmoVertex), 0);
+			glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(GizmoVertex), ((char*)0) + 16);
+
+			glBindVertexArray(0);
+		}
+
+		void Destroy()
+		{
+			m_vertices.clear();
+			m_indices.clear();
+
+			glDeleteBuffers(1, &m_vbo);
+			glDeleteBuffers(1, &m_ibo);
+			glDeleteVertexArrays(1, &m_vao);
+		}
+
+		inline vector<float> GetVertices() const { return m_vertices; }
+		inline vector<unsigned int> GetIndices() const { return m_indices; }
+	};
+
+	static void		create(unsigned int a_maxPoints = 0xffff, unsigned int a_maxMeshes = 0xffff, unsigned int a_maxLines = 0xffff, unsigned int a_maxTris = 0xffff,
 						   unsigned int a_max2DLines = 0xff, unsigned int a_max2DTris = 0xff);
 	static void		destroy();
 
@@ -18,6 +84,13 @@ public:
 	
 	// the projection matrix here should ideally be orthographic with a near of -1 and far of 1
 	static void		draw2D(const glm::mat4& a_projection);
+
+	// Adds a single debug mesh
+	static void		addMesh(GizmoMesh a_mesh, const glm::vec3& a_center,
+							const glm::vec4& a_colour, const glm::mat4* a_transform = nullptr, const float & p_lineWidth = 1.0F);
+
+	// Adds a single debug point. Transparency is not enabled for points. Set point size with glPointSize(...)
+	static void		addPoint(const glm::vec3& a_pos, const glm::vec4& a_colour);
 
 	// Adds a single debug line
 	static void		addLine(const glm::vec3& a_rv0,  const glm::vec3& a_rv1, 
@@ -87,9 +160,10 @@ public:
 	
 private:
 
-	Gizmos(unsigned int a_maxLines, unsigned int a_maxTris,
+	Gizmos(unsigned int a_maxPoints, unsigned int a_maxMeshes, unsigned int a_maxLines, unsigned int a_maxTris,
 		   unsigned int a_max2DLines, unsigned int a_max2DTris);
 	~Gizmos();
+
 
 	struct GizmoVertex {
 		float x, y, z, w;
@@ -108,6 +182,19 @@ private:
 	};
 
 	unsigned int	m_shader;
+
+	// mesh data
+	unsigned int	m_maxMeshes;
+	unsigned int	m_meshCount;
+	GizmoMesh*		m_meshes;
+
+	// point data
+	unsigned int	m_maxPoints;
+	unsigned int	m_pointCount;
+	GizmoVertex*	m_points;
+
+	unsigned int	m_pointVAO;
+	unsigned int 	m_pointVBO;
 
 	// line data
 	unsigned int	m_maxLines;

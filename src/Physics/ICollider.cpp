@@ -223,15 +223,8 @@ bool ICollider::AABBToSphereIntersect(AABBCollider *p_col1, SphereCollider *p_co
 {
 	vec3 diff = p_col2->GetPosition() - p_col1->GetPosition();
 
-	vec3 P = glm::normalize(diff);
-	P /= glm::max(glm::max(P.x, P.y), P.z);
-	P *= glm::min(glm::min(p_col1->GetHalfExtents().x, p_col1->GetHalfExtents().y), p_col1->GetHalfExtents().z);
-
-	float aabbRadius = glm::length(P);
-
+	
 	float distance = glm::length(diff);
-
-	float minDistance =  + p_col2->GetRadius();
 
 	//if (distance < minDistance)
 	float t = 0.0F;
@@ -251,7 +244,7 @@ bool ICollider::AABBToSphereIntersect(AABBCollider *p_col1, SphereCollider *p_co
 				else if (PointAbovePlane(vec3(+0, +0, -1), p_col1->GetHalfExtents().z, diff)) norm = vec3(+0, +0, -1);
 			}
 
-			iinfo->m_collisionVec = glm::normalize(norm);
+			iinfo->m_collisionVec = norm;
 			iinfo->m_pushFactor = t;
 		}
 
@@ -288,6 +281,41 @@ bool ICollider::AABBToPlaneIntersect(AABBCollider *p_col1, PlaneCollider *p_col2
 
 bool ICollider::AABBToAABBIntersect(AABBCollider *p_col1, AABBCollider *p_col2, IntersectInfo *iinfo)
 {
+	vec3 minExtend1 = p_col1->GetPosition() - p_col1->GetHalfExtents();
+	vec3 maxExtend1 = p_col1->GetPosition() + p_col1->GetHalfExtents();
+	vec3 minExtend2 = p_col2->GetPosition() - p_col2->GetHalfExtents();
+	vec3 maxExtend2 = p_col2->GetPosition() + p_col2->GetHalfExtents();
+
+
+	vec3 distance1 = minExtend2 - maxExtend1;
+	vec3 distance2 = minExtend1 - maxExtend2;
+
+	// preformx max calculation per component xyz
+	vec3 distance(
+		distance1.x >= distance2.x ? distance1.x : distance2.x,
+		distance1.y >= distance2.y ? distance1.y : distance2.y,
+		distance1.z >= distance2.z ? distance1.z : distance2.z
+		);
+
+	vec3 normal;
+	if (distance.x > distance.y && distance.x > distance.z) normal.x = distance.x;
+	else if (distance.y > distance.x && distance.y > distance.z) normal.y = distance.y;
+	else if (distance.z > distance.x && distance.z > distance.y) normal.z = distance.z;
+
+	// get the largest value xyz from the distance
+	float maxAxisDistance = glm::max(glm::max(distance.x, distance.y), distance.z);
+
+	if (maxAxisDistance < 0)
+	{
+		if (iinfo != nullptr)
+		{
+			iinfo->m_collisionVec = -glm::normalize(normal);
+			iinfo->m_pushFactor = -maxAxisDistance;
+		}
+
+		return true;
+	}
+
 	return false;
 }
 

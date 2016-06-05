@@ -140,6 +140,9 @@ void PhysicsScene::DetectCollisions()
 		{
 			CollisionInfo cinfo;
 
+			if ((*iter0)->GetIsStatic() && (*iter1)->GetIsStatic())
+				continue;
+
 			if (!(*iter0)->GetIsAwake() && !(*iter1)->GetIsAwake())
 				continue;
 
