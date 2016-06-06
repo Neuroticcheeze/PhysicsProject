@@ -6,8 +6,11 @@
 
 
 //constructor
-ParticleFluidEmitter::ParticleFluidEmitter(int _maxParticles, PxVec3 _position,PxParticleFluid* _pf,float _releaseDelay)
+ParticleFluidEmitter::ParticleFluidEmitter(const bool & p_renderAsPoints, const glm::vec4 & p_colour, int _maxParticles, PxVec3 _position,PxParticleFluid* _pf,float _releaseDelay)
 {
+	m_renderAsPoints = p_renderAsPoints;
+	m_colour = p_colour;
+
 	m_releaseDelay = _releaseDelay;
 	m_maxParticles = _maxParticles;  //maximum number of particles our emitter can handle
 	//allocate an array
@@ -185,7 +188,19 @@ void ParticleFluidEmitter::renderParticles()
 				//If it has a density of 0 it has no neighbours, 1 is maximum neighbouts
 				//we can use this to decide if the particle is seperate or part of a larger body of fluid
 				glm::vec3 pos(positionIt->x,positionIt->y,positionIt->z);
-				Gizmos::addPoint(pos, glm::vec4(0.3F, 0.5F, 0.8F, 0.3333F));
+
+				switch (m_renderAsPoints)
+				{
+				case true:
+
+					Gizmos::addPoint(pos, m_colour);
+
+					break;
+
+				default:
+
+					Gizmos::addSphere(pos, 0.5F, 5, 7, m_colour);
+				}
 			}
 		}
 		// return ownership of the buffers back to the SDK

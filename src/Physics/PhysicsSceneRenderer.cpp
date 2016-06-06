@@ -189,7 +189,7 @@ void PhysicsSceneRenderer::Render(PhysicsScene *p_scene, Camera *p_camera)
 		Gizmos::addLine(con->GetObject1()->GetPosition(), con->GetObject2()->GetPosition(), col);
 	}
 
-	printf("Physics Objects: %d [AWAKE] / %d [TOTAL]\n", activeObjects, objects.size());
+	//printf("Physics Objects: %d [AWAKE] / %d [TOTAL]\n", activeObjects, objects.size());
 }
 
 PhysicsSceneRenderer::RenderInfo &PhysicsSceneRenderer::GetRenderInfo(IPhysicsObject *p_obj)

@@ -110,8 +110,6 @@ void setShapeAsTrigger(physx::PxRigidActor* actorIn)
 	_aligned_free(shapes);
 }
 
-
-
 PhysXObject::PhysXObject() :
 	m_dynamicActor(nullptr),
 	m_staticActor(nullptr),
@@ -150,6 +148,8 @@ PhysXSystem::PhysXSystem()
 	////////////////////////////////////////
 
 
+
+
 	physx::PxAllocatorCallback *myCallback = new MyAllocator();
 	g_PhysicsFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, *myCallback,
 		gDefaultErrorCallback);
@@ -168,16 +168,13 @@ PhysXSystem::PhysXSystem()
 
 
 
-	//IMPORTANT:
-	//PxInitExtensions(*g_Physics); //Init the Extensions like cooking where mSDK is a pointer to PxCreatePhysics
-
 
 	PxTolerancesScale toleranceScale;
 	toleranceScale.mass = 1000;
-	toleranceScale.speed = sceneDesc.gravity.y;
+	toleranceScale.speed = sceneDesc.gravity.y * 2;
 	bool value = toleranceScale.isValid(); // make sure this value is always true
 
-	g_PhysicsCooker = PxCreateCooking(PX_PHYSICS_VERSION, *g_PhysicsFoundation, PxCookingParams(toleranceScale));
+	g_PhysicsCooker = PxCreateCooking(PX_PHYSICS_VERSION, *g_PhysicsFoundation, PxCookingParams(PxTolerancesScale()));
 
 
 	////////////////////////////////////////
@@ -190,6 +187,7 @@ PhysXSystem::PhysXSystem()
 	////////////////////////////////////////
 	// check if PvdConnection manager is available on this platform
 
+#define _USE_PVD
 #ifdef _USE_PVD
 	if (g_Physics->getPvdConnectionManager() == NULL)
 		return;
@@ -222,6 +220,11 @@ void PhysXSystem::Update(const float & p_deltaTime)
 	if (p_deltaTime <= 0)
 		return;
 
+	for (PhysXFluid * fluid : m_fluids)
+	{
+		fluid->m_emitter->update(p_deltaTime);
+	}
+
 	g_PhysicsScene->simulate(glm::min(p_deltaTime, 60.0F / 1000.0F));//A workaround to stop everything from shooting across the sky 
 																	 //when the window bar is held a while then released.
 
@@ -241,7 +244,7 @@ physx::PxMaterial * PhysXSystem::GetMaterial(const char * p_name)
 	return m_materials.at(string(p_name));
 }
 
-void PhysXSystem::Add(const char* p_name, physx::PxU32 p_filterGroup, physx::PxU32 p_filterMask, const char * p_material, const float & p_density, const physx::PxGeometry & p_geometry, physx::PxVec3 p_pos, physx::PxQuat p_rot, const bool & p_isStatic, const bool & p_isTrigger, Gizmos::GizmoMesh * p_potMesh, Gizmos::GizmoMesh * p_impMesh)
+void PhysXSystem::Add(const char* p_name, physx::PxU32 p_filterGroup, physx::PxU32 p_filterMask, const char * p_material, const float & p_density, const physx::PxVec3 & p_startVelocity, const physx::PxGeometry & p_geometry, physx::PxVec3 p_pos, physx::PxQuat p_rot, const bool & p_isStatic, const bool & p_isTrigger, Gizmos::GizmoMesh * p_potMesh, Gizmos::GizmoMesh * p_impMesh)
 {
 	assert(p_isTrigger ? p_isStatic : true);
 
@@ -282,6 +285,9 @@ void PhysXSystem::Add(const char* p_name, physx::PxU32 p_filterGroup, physx::PxU
 	setupFiltering(pobj->GetActor(), p_filterGroup, p_filterMask);
 	pobj->GetActor()->setName(p_name);
 
+	if (pobj->GetActor()->isRigidBody())
+		pobj->GetActor()->isRigidBody()->setLinearVelocity(p_startVelocity);
+
 	m_physicsObjects.push_back(pobj);
 }
 
@@ -302,7 +308,43 @@ void PhysXSystem::AddArticulation(RagdollNode ** p_ragdollData, const float & p_
 	m_articulations.push_back(art);
 }
 
-physx::PxConvexMesh * PhysXSystem::GenerateConvexHullMesh(vector<float> p_inVertices, vector<float> & p_outVertices, vector<unsigned int> & p_outIndices, const unsigned char & p_targetVerts)
+void PhysXSystem::AddLiquidSource(const bool & p_renderAsPoints, const vec4 & p_colour, const vec3 & p_position, vec3 p_startVelocity, float p_startVelAccuracy, float p_releaseDelay, float p_stiffness, float p_restitution, float p_particleMass, float p_damping, float p_staticFriction, float p_dynamicFriction, float p_restParticleDistance, PxU32 p_maxParticles)
+{
+	vec3 devi = vec3(p_startVelocity.length()) * (1.0F - glm::clamp(p_startVelAccuracy, 0.0F, 1.0F));
+	vec3 minv = p_startVelocity - devi;
+	vec3 maxv = p_startVelocity + devi;
+
+	//create our particle system
+	PxParticleFluid* pf;
+	// create particle system in PhysX SDK
+	// set immutable properties.
+
+	pf = g_Physics->createParticleFluid(p_maxParticles);
+
+	pf->setRestParticleDistance(p_restParticleDistance);
+	pf->setStaticFriction(p_staticFriction);
+	pf->setDynamicFriction(p_dynamicFriction);
+	pf->setDamping(p_damping);
+	pf->setParticleMass(p_particleMass);
+	pf->setRestitution(p_restitution);
+	pf->setParticleBaseFlag(PxParticleBaseFlag::eCOLLISION_TWOWAY, true);
+	pf->setStiffness(p_stiffness);
+	if (pf)
+	{
+		g_PhysicsScene->addActor(*pf);
+
+		PhysXFluid * fluid = new PhysXFluid;
+
+		fluid->m_emitter = new ParticleFluidEmitter(p_renderAsPoints, p_colour, p_maxParticles, PxVec3(p_position.x, p_position.y, p_position.z), pf, p_releaseDelay);
+		fluid->m_emitter->setStartVelocityRange(minv.x, minv.y, minv.z, maxv.x, maxv.y, maxv.z);
+
+		fluid->m_particleSystem = pf;
+
+		m_fluids.push_back(fluid);
+	}
+}
+
+physx::PxConvexMesh * PhysXSystem::GenerateConvexHullMesh(vector<float> p_inVertices, vector<float> & p_outVertices, vector<unsigned int> & p_outIndices, const unsigned short & p_targetVerts)
 {
 	//reserve space for vert buffer
 	int numberVerts = p_inVertices.size() / 8;
@@ -343,9 +385,12 @@ physx::PxConvexMesh * PhysXSystem::GenerateConvexHullMesh(vector<float> p_inVert
 	//Convert PxConvexMesh data to GizmoMesh data.
 	{
 		int vertCount = convexMesh->getNbVertices();
-		int indCount = convexMesh->getNbPolygons() * 3;
+		int indCount = convexMesh->getNbPolygons();
 		auto pverts = convexMesh->getVertices();
 		auto pinds = convexMesh->getIndexBuffer();
+
+
+		
 
 		p_outVertices.resize(vertCount * 8);
 		for (int vert = 0; vert < vertCount; ++vert)
@@ -372,6 +417,11 @@ physx::PxConvexMesh * PhysXSystem::GenerateConvexHullMesh(vector<float> p_inVert
 
 void PhysXSystem::Clear()
 {
+	for (PhysXFluid * fluid : m_fluids)
+	{
+		GetScene()->removeActor(*fluid->m_particleSystem);
+		delete fluid->m_emitter;
+	}
 	for (PhysXObject * obj : m_physicsObjects)
 	{
 		obj->Destroy(*this);
@@ -382,6 +432,7 @@ void PhysXSystem::Clear()
 		GetScene()->removeArticulation(*obj);
 	}
 
+	m_fluids.clear();
 	m_physicsObjects.clear();
 	m_articulations.clear();
 }
@@ -544,7 +595,7 @@ void addConvexMesh(physx::PxShape* pShape, physx::PxRigidActor* actor, const boo
 	{
 		Gizmos::addMesh(static_cast<PhysXObject*>(actor->userData)->GetPotentialMesh(), vec3(0), colour, &M);
 		colour.a = 0.0F;
-		Gizmos::addMesh(static_cast<PhysXObject*>(actor->userData)->GetImposterMesh(), vec3(0), colour, &M, 3.0F);
+		Gizmos::addMesh(static_cast<PhysXObject*>(actor->userData)->GetImposterMesh(), vec3(0), colour, &M, 8.0F);
 	}
 }
 void _addWidget(physx::PxShape* shape, physx::PxRigidActor* actor, const bool & p_triggerRenderMode) 
@@ -571,6 +622,11 @@ void _addWidget(physx::PxShape* shape, physx::PxRigidActor* actor, const bool & 
 }
 void PhysXSystem::Render() const
 {
+	for (PhysXFluid * fluid : m_fluids)
+	{
+		fluid->m_emitter->renderParticles();
+	}
+
 	for (auto articulation : m_articulations)
 	{
 		physx::PxU32 nLinks = articulation->getNbLinks();

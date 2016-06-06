@@ -159,6 +159,7 @@ Gizmos::~Gizmos() {
 	delete[] m_lines;
 	delete[] m_tris;
 	delete[] m_transparentTris;
+	glDeleteBuffers(1, &m_pointVBO);
 	glDeleteBuffers( 1, &m_lineVBO );
 	glDeleteBuffers( 1, &m_triVBO );
 	glDeleteBuffers( 1, &m_transparentTriVBO );
@@ -922,6 +923,7 @@ void Gizmos::draw(const glm::mat4& a_projectionView) {
 		unsigned int projectionViewUniform = glGetUniformLocation(sm_singleton->m_shader,"ProjectionView");
 		glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(a_projectionView));
 		
+
 		if (sm_singleton->m_lineCount > 0)
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, sm_singleton->m_lineVBO);

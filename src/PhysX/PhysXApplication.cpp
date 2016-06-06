@@ -23,7 +23,6 @@ using glm::vec4;
 using glm::mat4;
 
 Gizmos::GizmoMesh complexMesh, complexImpMesh, blobMesh, blobImpMesh;
-ParticleFluidEmitter * m_particleEmitter = nullptr;
 
 PhysXApplication::PhysXApplication()
 	: m_camera(nullptr) {
@@ -57,7 +56,7 @@ bool PhysXApplication::startup()
 		{
 			vector<float> verts;
 			vector<unsigned int> indices;
-			if (LoadObj("objs/complex_shape.obj", verts, indices, vec3(5, 5, 5)))
+			if (LoadObj("objs/complex_shape_torus.obj", verts, indices, vec3(5, 5, 5)))
 				complexMesh.Create(verts, indices);
 		}
 		{
@@ -72,69 +71,70 @@ bool PhysXApplication::startup()
 	m_psys = new MyPhysX::PhysXSystem;
 
 	//New type of material
-	m_psys->AddMaterial("box", 0.5F, 0.2F, 0.2F);
+	m_psys->AddMaterial("box", 0.9F, 0.9F, 0.1F);
 
 	//Add ground and trigger
 	{
-		m_psys->Add("Ground", MyPhysX::PhysXFilter::eNONE, MyPhysX::PhysXFilter::eNONE, "default", 0, physx::PxPlaneGeometry(),
+		m_psys->Add("Ground", MyPhysX::PhysXFilter::eNONE, MyPhysX::PhysXFilter::eNONE, "default", 0, physx::PxVec3(0), physx::PxPlaneGeometry(),
 			physx::PxVec3(0.0f, 0, 0.0f),
 			physx::PxQuat(
 				physx::PxHalfPi,
 				physx::PxVec3(0.0f, 0.0f, 1.0f).getNormalized()),
 			true);
 
-		m_psys->Add("Trigger Region", MyPhysX::PhysXFilter::ePLAYER, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "box", glm::linearRand(10, 1000), physx::PxBoxGeometry(10, 10, 10),
+		m_psys->Add("Trigger Region", MyPhysX::PhysXFilter::ePLAYER, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "box", glm::linearRand(10, 1000), physx::PxVec3(0), physx::PxBoxGeometry(10, 10, 10),
 			physx::PxVec3(0, 10, 0),
 			physx::PxQuat(physx::PxIDENTITY::PxIdentity),
 			true, true);
 	}
 
 	//complex humanoid ragdoll example
-	{enum RagDollParts
 	{
-		NO_PARENT = -1,
-		LOWER_SPINE,
-		LEFT_PELVIS,
-		RIGHT_PELVIS,
-		LEFT_UPPER_LEG,
-		RIGHT_UPPER_LEG,
-		LEFT_LOWER_LEG,
-		RIGHT_LOWER_LEG,
-		UPPER_SPINE,
-		LEFT_CLAVICLE,
-		RIGHT_CLAVICLE,
-		NECK,
-		HEAD,
-		LEFT_UPPER_ARM,
-		RIGHT_UPPER_ARM,
-		LEFT_LOWER_ARM,
-		RIGHT_LOWER_ARM,
-	};
-	MyPhysX::RagdollNode* ragdollData[] =
-	{
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Z_AXIS), NO_PARENT,1,3,1,1,"lower spine"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi, MyPhysX::Z_AXIS), LOWER_SPINE, 1,1,-1,1,"left pelvis"),
-		new MyPhysX::RagdollNode(physx::PxQuat(0, MyPhysX::Z_AXIS), LOWER_SPINE, 1,1,-1, 1,"right pelvis"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f + 0.2f, MyPhysX::Z_AXIS),LEFT_PELVIS,5,2,-1,1,"L upper leg"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f - 0.2f, MyPhysX::Z_AXIS),RIGHT_PELVIS,5,2,-1,1,"R upper leg"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f + 0.2f, MyPhysX::Z_AXIS),LEFT_UPPER_LEG,5,1.75,-1,1,"L lower leg"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f - 0.2f, MyPhysX::Z_AXIS),RIGHT_UPPER_LEG,5,1.75,-1,1,"R lowerleg"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Z_AXIS), LOWER_SPINE, 1, 3, 1, -1, "upper spine"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi, MyPhysX::Z_AXIS), UPPER_SPINE, 1, 1.5, 1, 1, "left clavicle"),
-		new MyPhysX::RagdollNode(physx::PxQuat(0, MyPhysX::Z_AXIS), UPPER_SPINE, 1, 1.5, 1, 1, "right clavicle"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Z_AXIS), UPPER_SPINE, 1, 1, 1, -1, "neck"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Z_AXIS), NECK, 1, 3, 1, -1, "head"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi - .3, MyPhysX::Z_AXIS), LEFT_CLAVICLE, 3, 1.5, -1, 1, "left upper arm"),
-		new MyPhysX::RagdollNode(physx::PxQuat(0.3, MyPhysX::Z_AXIS), RIGHT_CLAVICLE, 3, 1.5, -1, 1, "right upper arm"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi - .3, MyPhysX::Z_AXIS), LEFT_UPPER_ARM, 3, 1, -1, 1, "left lower arm"),
-		new MyPhysX::RagdollNode(physx::PxQuat(0.3, MyPhysX::Z_AXIS), RIGHT_UPPER_ARM, 3, 1, -1, 1, "right lower arm"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Y_AXIS),LEFT_LOWER_LEG,1,1.5F,-1,1,"L foot"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Y_AXIS),RIGHT_LOWER_LEG,1,1.5F,-1,1,"R foot"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Y_AXIS),LEFT_LOWER_ARM,0.5F,1.5F,-1,1,"L arm"),
-		new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Y_AXIS),RIGHT_LOWER_ARM,0.5F,1.5F,-1,1,"R arm"),
-		NULL
-	};
-	m_psys->AddArticulation(ragdollData, 0.3F, "box", physx::PxVec3(20, 20, 20), physx::PxQuat(glm::radians(glm::linearRand(0.0F, 360.0F)), physx::PxVec3(0, 1, 0)));
+		enum RagDollParts
+		{
+			NO_PARENT = -1,
+			LOWER_SPINE,
+			LEFT_PELVIS,
+			RIGHT_PELVIS,
+			LEFT_UPPER_LEG,
+			RIGHT_UPPER_LEG,
+			LEFT_LOWER_LEG,
+			RIGHT_LOWER_LEG,
+			UPPER_SPINE,
+			LEFT_CLAVICLE,
+			RIGHT_CLAVICLE,
+			NECK,
+			HEAD,
+			LEFT_UPPER_ARM,
+			RIGHT_UPPER_ARM,
+			LEFT_LOWER_ARM,
+			RIGHT_LOWER_ARM,
+		};
+		MyPhysX::RagdollNode* ragdollData[] =
+		{
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Z_AXIS), NO_PARENT,1,3,1,1,"lower spine"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi, MyPhysX::Z_AXIS), LOWER_SPINE, 1,1,-1,1,"left pelvis"),
+			new MyPhysX::RagdollNode(physx::PxQuat(0, MyPhysX::Z_AXIS), LOWER_SPINE, 1,1,-1, 1,"right pelvis"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f + 0.2f, MyPhysX::Z_AXIS),LEFT_PELVIS,5,2,-1,1,"L upper leg"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f - 0.2f, MyPhysX::Z_AXIS),RIGHT_PELVIS,5,2,-1,1,"R upper leg"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f + 0.2f, MyPhysX::Z_AXIS),LEFT_UPPER_LEG,5,1.75,-1,1,"L lower leg"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f - 0.2f, MyPhysX::Z_AXIS),RIGHT_UPPER_LEG,5,1.75,-1,1,"R lowerleg"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Z_AXIS), LOWER_SPINE, 1, 3, 1, -1, "upper spine"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi, MyPhysX::Z_AXIS), UPPER_SPINE, 1, 1.5, 1, 1, "left clavicle"),
+			new MyPhysX::RagdollNode(physx::PxQuat(0, MyPhysX::Z_AXIS), UPPER_SPINE, 1, 1.5, 1, 1, "right clavicle"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Z_AXIS), UPPER_SPINE, 1, 1, 1, -1, "neck"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Z_AXIS), NECK, 1, 3, 1, -1, "head"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi - .3, MyPhysX::Z_AXIS), LEFT_CLAVICLE, 3, 1.5, -1, 1, "left upper arm"),
+			new MyPhysX::RagdollNode(physx::PxQuat(0.3, MyPhysX::Z_AXIS), RIGHT_CLAVICLE, 3, 1.5, -1, 1, "right upper arm"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi - .3, MyPhysX::Z_AXIS), LEFT_UPPER_ARM, 3, 1, -1, 1, "left lower arm"),
+			new MyPhysX::RagdollNode(physx::PxQuat(0.3, MyPhysX::Z_AXIS), RIGHT_UPPER_ARM, 3, 1, -1, 1, "right lower arm"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Y_AXIS),LEFT_LOWER_LEG,1,1.5F,-1,1,"L foot"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Y_AXIS),RIGHT_LOWER_LEG,1,1.5F,-1,1,"R foot"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Y_AXIS),LEFT_LOWER_ARM,0.5F,1.5F,-1,1,"L arm"),
+			new MyPhysX::RagdollNode(physx::PxQuat(physx::PxPi / 2.0f, MyPhysX::Y_AXIS),RIGHT_LOWER_ARM,0.5F,1.5F,-1,1,"R arm"),
+			NULL
+		};
+		m_psys->AddArticulation(ragdollData, 0.3F, "box", physx::PxVec3(20, 20, 20), physx::PxQuat(glm::radians(glm::linearRand(0.0F, 360.0F)), physx::PxVec3(0, 1, 0)));
 	}
 	//////////////////////////////////
 
@@ -143,63 +143,38 @@ bool PhysXApplication::startup()
 		PxBoxGeometry side1(4.5, 1, .5);
 		PxBoxGeometry side2(.5, 1, 4.5);
 
-		m_psys->Add("wall0", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "default", 10.0F,
+		m_psys->Add("wall0", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "default", 10.0F, physx::PxVec3(0),
 			side1,
 			PxVec3(0.0f, 0.5, 4.0f), physx::PxQuat(physx::PxIDENTITY::PxIdentity), true, false);
 
-		m_psys->Add("wall1", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "default", 10.0F,
+		m_psys->Add("wall1", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "default", 10.0F, physx::PxVec3(0),
 			side1,
 			PxVec3(0.0f, 0.5, -4.0f), physx::PxQuat(physx::PxIDENTITY::PxIdentity), true, false);
 
-		m_psys->Add("wall2", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "default", 10.0F,
+		m_psys->Add("wall2", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "default", 10.0F, physx::PxVec3(0),
 			side2,
 			PxVec3(4.0f, 0.5, 0), physx::PxQuat(physx::PxIDENTITY::PxIdentity), true, false);
 
-		m_psys->Add("wall3", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "default", 10.0F,
+		m_psys->Add("wall3", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "default", 10.0F, physx::PxVec3(0),
 			side2,
 			PxVec3(-4.0f, 0.5, 0), physx::PxQuat(physx::PxIDENTITY::PxIdentity), true, false);
 	}
 	////////////////
 
 	//Add the liquid
-	{
-		//create our particle system
-		PxParticleFluid* pf;
-		// create particle system in PhysX SDK
-		// set immutable properties.
-		PxU32 maxParticles = 4000;
-		bool perParticleRestOffset = false;
-		pf = m_psys->GetPhysics()->createParticleFluid(maxParticles, perParticleRestOffset);
-		pf->setRestParticleDistance(.5f);
-		pf->setDynamicFriction(0.02);
-		pf->setStaticFriction(0.02);
-		pf->setDamping(0.01);
-		pf->setParticleMass(.7);
-		pf->setRestitution(0.15F);
-		//pf->setParticleReadDataFlag(PxParticleReadDataFlag::eDENSITY_BUFFER,
-		// true);
-		pf->setParticleBaseFlag(PxParticleBaseFlag::eCOLLISION_TWOWAY, true);
-		pf->setStiffness(40);
-		if (pf)
-		{
-			m_psys->GetScene()->addActor(*pf);
-			m_particleEmitter = new ParticleFluidEmitter(maxParticles,
-				PxVec3(0, 10, 0), pf, .075);
-			m_particleEmitter->setStartVelocityRange(-0.001f, -250.0f, -0.001f,
-				0.001f, -250.0f, 0.001f);
-		}
-	}
+	m_psys->AddLiquidSource(true, vec4(1, 0.5F, 0, 0.85F), vec3(0, 20, 0), vec3(10, 0, 0), 0.5F, 0.075F, 200.0F, 0.8F, 0.75F, 0.2F, 0.0F, 0.0F, 0.3F, 6000);
+	m_psys->AddLiquidSource(true, vec4(0.3F, 0.3F, 0.5F, 1.0F), vec3(10, 10, 6), vec3(-10, 22,  0), 0.2F, 0.075F, 5.0F, 0.8F, 0.75F, 0.0F, 0.2F, 0.0F, 0.3F, 6000);
 	////////////////
 
 	//Create convex hull mesh
 	{
 		vector<float> verts;
 		vector<unsigned int> inds;
-		physx::PxConvexMesh * cm = m_psys->GenerateConvexHullMesh(complexMesh.GetVertices(), verts, inds, 80);
+		physx::PxConvexMesh * cm = m_psys->GenerateConvexHullMesh(complexMesh.GetVertices(), verts, inds, 128);
 		if (cm)
 		{
 			complexImpMesh.Create(verts, inds);
-			m_psys->Add("test convex", 0, 0, "box", 100.0F, physx::PxConvexMeshGeometry(cm), physx::PxVec3(30, 100, 30),
+			m_psys->Add("test convex", 0, 0, "box", 100.0F, physx::PxVec3(0), physx::PxConvexMeshGeometry(cm), physx::PxVec3(30, 100, 30),
 				physx::PxQuat(glm::radians(glm::linearRand(0.0F, 360.0F)), physx::PxVec3(0, 1, 0)), false, false, &complexMesh, &complexImpMesh);
 		}
 
@@ -209,8 +184,26 @@ bool PhysXApplication::startup()
 			system("pause");
 		}
 	}
-
 	/////////////////////////
+
+	//Build janga tower
+	for (int t = 0; t < 75; ++t)
+	{
+		int alt = t % 2;
+		//float ang =  alt * 180.0F;
+		physx::PxQuat quat(0, PxVec3(0, 1, 0));
+
+		PxBoxGeometry side = alt ? PxBoxGeometry(8, 0.498F, 2) : PxBoxGeometry(2, 0.498F, 8);
+
+		m_psys->Add("jwall0", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "box", 2.0F, physx::PxVec3(0),
+			side,
+			PxVec3(alt ? 0.0f : -5.0F, t, alt ? -5.0f : 0.0F) + PxVec3(100, 0.5F, 0), quat);
+
+		m_psys->Add("jwall0", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "box", 2.0F, physx::PxVec3(0),
+			side,
+			PxVec3(alt ? 0.0f : 5.0F, t, alt ? 5.0f : 0.0F) + PxVec3(100, 0.5F, 0), quat);
+	}
+	///////////////////
 
 	return true;
 }
@@ -253,6 +246,38 @@ bool PhysXApplication::update(float deltaTime)
 	//Update the physics system
 	m_psys->Update(deltaTime);
 
+	//Ball gun
+	{
+		vec4 positionVec = m_camera->getTransform()[3];
+		vec4 forwardVec = m_camera->getTransform()[2];
+		vec4 rightVec = m_camera->getTransform()[0];
+
+		static bool leftMouseClick = false, leftMouseClickPrev = false;
+
+		leftMouseClick = glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS;
+
+		if (leftMouseClick && !leftMouseClickPrev)
+		{
+			const float density = 5.5F;
+
+			float r = glm::linearRand(3.0F, 6.0F);
+			vec3 v = vec3(-forwardVec) * 150.0F + glm::ballRand(7.0F);
+
+			m_psys->Add("Bullet",
+				MyPhysX::PhysXFilter::ePLAYER, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND,
+				"box",
+				45,
+				physx::PxVec3(v.x, v.y, v.z),
+				physx::PxSphereGeometry(2.5F),
+				physx::PxVec3(positionVec.x, positionVec.y, positionVec.z),
+				physx::PxQuat(glm::radians(glm::linearRand(0.0F, 360.0F)), physx::PxVec3(0, 1, 0)));
+			
+
+		}
+
+		leftMouseClickPrev = leftMouseClick;
+	}
+
 	//Create falling shapes
 	{
 		{
@@ -264,6 +289,7 @@ bool PhysXApplication::update(float deltaTime)
 					MyPhysX::PhysXFilter::ePLAYER, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND,
 					"box",
 					1000,
+					physx::PxVec3(0),
 					physx::PxSphereGeometry(glm::linearRand(0.5F, 10.0F)),
 					physx::PxVec3(30, 50, 30),
 					physx::PxQuat(glm::radians(glm::linearRand(0.0F, 360.0F)), physx::PxVec3(0, 1, 0)));
@@ -279,6 +305,7 @@ bool PhysXApplication::update(float deltaTime)
 					MyPhysX::PhysXFilter::ePLAYER, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND,
 					"box",
 					1000,
+					physx::PxVec3(0),
 					physx::PxCapsuleGeometry(glm::linearRand(0.5F, 3.0F), glm::linearRand(5, 9)),
 					physx::PxVec3(30, 50, 30),
 					physx::PxQuat(glm::radians(glm::linearRand(0.0F, 360.0F)), physx::PxVec3(0, 1, 0)));
@@ -292,6 +319,7 @@ bool PhysXApplication::update(float deltaTime)
 			{
 				m_psys->Add("FallingBox", MyPhysX::PhysXFilter::eGROUND, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "box",
 					1000,
+					physx::PxVec3(0),
 					physx::PxBoxGeometry(glm::linearRand(0.5F, 3.0F), glm::linearRand(0.5F, 3.0F), glm::linearRand(0.5F, 3.0F)),
 					physx::PxVec3(30, 50, 30),
 					physx::PxQuat(glm::radians(glm::linearRand(0.0F, 360.0F)), physx::PxVec3(0, 1, 0)));
@@ -307,20 +335,18 @@ bool PhysXApplication::update(float deltaTime)
 		Gizmos::addPoint(vec3(0, 10, 0), vec4(1, 0, 0, 1));
 	}
 
-	//Render the fluid
-	{
-		if (m_particleEmitter)
-		{
-			m_particleEmitter->update(deltaTime);
-			//render all our particles
-			m_particleEmitter->renderParticles();
-		}
-	}
-
 	//Clear-scene code. Press C
 	{
 		if (glfwGetKey(m_window, GLFW_KEY_C) == GLFW_PRESS)
+		{
 			m_psys->Clear();
+			m_psys->Add("Ground", MyPhysX::PhysXFilter::eNONE, MyPhysX::PhysXFilter::eNONE, "default", 0, physx::PxVec3(0), physx::PxPlaneGeometry(),
+				physx::PxVec3(0.0f, 0, 0.0f),
+				physx::PxQuat(
+					physx::PxHalfPi,
+					physx::PxVec3(0.0f, 0.0f, 1.0f).getNormalized()),
+				true);
+		}
 	}
 
 	// return true, else the application closes

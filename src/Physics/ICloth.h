@@ -23,8 +23,8 @@ namespace Physics
 			const float & p_fabricLengthLimit = 2.0F,
 			const float & p_fabricStiffness = 200.0F, 
 			const float & p_fabricFriction = 10.5F, 
-			const float & p_fabricStrength = 2000.0F, 
-			const float & p_mass = 1.25F, 
+			const float & p_fabricStrength = 1500.0F, 
+			const float & p_mass = 1.0F, 
 			const float & p_bounciness = 0.4F, 
 			const float & p_friction = 2.0F);
 

@@ -71,11 +71,11 @@ bool TestApplication::startup() {
 		m_physicsSceneRenderer->GetRenderInfo(obj0).m_colour = vec4(0, 0, 1, 0.5F);
 	}
 
-	//for (int t = 0; t < 1; ++t)
-	//{
-	//	Physics::ICloth *cloth = m_physicsScene->CreateCloth<Physics::ICloth>(m_physicsSceneRenderer, vec3(t * 8, 15, 0));
-	//	for (int i = 0; i < cloth->GetWidth(); ++i) cloth->SetHook(cloth->GetWidth() * (cloth->GetHeight() - 1) + i);
-	//}
+	for (int t = 0; t < 1; ++t)
+	{
+		Physics::ICloth *cloth = m_physicsScene->CreateCloth<Physics::ICloth>(m_physicsSceneRenderer, vec3(t * 8, 15, 0));
+		for (int i = 0; i < cloth->GetWidth(); ++i) cloth->SetHook(cloth->GetWidth() * (cloth->GetHeight() - 1) + i);
+	}
 
 
 
@@ -140,11 +140,11 @@ bool TestApplication::update(float deltaTime)
 
 		float r = glm::linearRand(3.0F, 6.0F);
 		Physics::IPhysicsObject *obj = m_physicsScene->CreatePhysicsObject<Physics::IPhysicsObject>();
-		obj->SetCollider(new Physics::AABBCollider(vec3(10, 10, 10)));
-		obj->SetMass(15);
-		obj->SetBounciness(0.8F);
-		obj->SetFriction(18.0F);
-		obj->SetVelocity(vec3(-forwardVec) * 100.0F + glm::ballRand(7.0F));
+		obj->SetCollider(new Physics::AABBCollider(vec3(3)));
+		obj->SetMass(40);
+		obj->SetBounciness(0.2F);
+		obj->SetFriction(5.0F);
+		obj->SetVelocity(vec3(-forwardVec) * 150.0F + glm::ballRand(7.0F));
 		m_physicsSceneRenderer->GetRenderInfo(obj).m_colour = vec4(glm::ballRand(0.5F) + 0.5F, 1);
 		obj->SetPosition(vec3(positionVec));
 	}

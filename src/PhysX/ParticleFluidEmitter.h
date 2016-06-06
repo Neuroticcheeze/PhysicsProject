@@ -18,7 +18,7 @@ class ParticleFluidEmitter
 {
 	
 public:
-	ParticleFluidEmitter(int _maxParticles,PxVec3 _position,PxParticleFluid* _pf,float _releaseDelay);
+	ParticleFluidEmitter(const bool & p_renderAsPoints, const glm::vec4 & p_colour, int _maxParticles,PxVec3 _position,PxParticleFluid* _pf,float _releaseDelay);
 	~ParticleFluidEmitter();
 	void update(float delta);
 	void releaseParticle(int);
@@ -50,4 +50,7 @@ private:
 
 	PxVec3				m_minVelocity;
 	PxVec3				m_maxVelocity;
+
+	bool m_renderAsPoints;
+	glm::vec4 m_colour;
 };

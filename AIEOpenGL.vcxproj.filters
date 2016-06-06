@@ -126,7 +126,4 @@
     <ClInclude Include="src\PhysX\ParticleEmitter.h" />
     <ClInclude Include="src\PhysX\ParticleFluidEmitter.h" />
   </ItemGroup>
-  <ItemGroup>
-    <Object Include="objs\pine.obj" />
-  </ItemGroup>
 </Project>

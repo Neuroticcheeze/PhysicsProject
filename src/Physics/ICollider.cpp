@@ -5,6 +5,8 @@
 #include "PointCollider.h"
 #include "AABBCollider.h"
 
+#include "..\Gizmos.h"
+
 #include <glm\ext.hpp>
 
 #include <glm\vec4.hpp>
@@ -309,7 +311,12 @@ bool ICollider::AABBToAABBIntersect(AABBCollider *p_col1, AABBCollider *p_col2, 
 	{
 		if (iinfo != nullptr)
 		{
-			iinfo->m_collisionVec = -glm::normalize(normal);
+			//If-else pair corrects the normal based on some black magic with distance1 and distance2.
+			if (glm::max(distance1.x, glm::max(distance1.y, distance1.z)) > glm::max(distance2.x, glm::max(distance2.y, distance2.z)))
+				iinfo->m_collisionVec = -1  * glm::normalize(normal);
+			else
+				iinfo->m_collisionVec = 1 * glm::normalize(normal);
+
 			iinfo->m_pushFactor = -maxAxisDistance;
 		}
 
