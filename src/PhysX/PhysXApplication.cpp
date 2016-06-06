@@ -71,7 +71,7 @@ bool PhysXApplication::startup()
 	m_psys = new MyPhysX::PhysXSystem;
 
 	//New type of material
-	m_psys->AddMaterial("box", 0.9F, 0.9F, 0.1F);
+	m_psys->AddMaterial("box", 0.85F, 0.85F, 0.1F);
 
 	//Add ground and trigger
 	{
@@ -187,21 +187,23 @@ bool PhysXApplication::startup()
 	/////////////////////////
 
 	//Build janga tower
-	for (int t = 0; t < 75; ++t)
+	for (int t = 0; t < 50; ++t)
 	{
 		int alt = t % 2;
 		//float ang =  alt * 180.0F;
 		physx::PxQuat quat(0, PxVec3(0, 1, 0));
 
-		PxBoxGeometry side = alt ? PxBoxGeometry(8, 0.498F, 2) : PxBoxGeometry(2, 0.498F, 8);
+		PxBoxGeometry side = alt ? PxBoxGeometry(8, 0.998F, 2) : PxBoxGeometry(2, 0.998F, 8);
 
-		m_psys->Add("jwall0", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "box", 2.0F, physx::PxVec3(0),
-			side,
-			PxVec3(alt ? 0.0f : -5.0F, t, alt ? -5.0f : 0.0F) + PxVec3(100, 0.5F, 0), quat);
+		float d = 2.0F * (float)(70 - t) / 50;// block density decreases as tower goes up.
 
-		m_psys->Add("jwall0", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "box", 2.0F, physx::PxVec3(0),
+		m_psys->Add("jwall0", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "box", d, physx::PxVec3(0),
 			side,
-			PxVec3(alt ? 0.0f : 5.0F, t, alt ? 5.0f : 0.0F) + PxVec3(100, 0.5F, 0), quat);
+			PxVec3(alt ? 0.0f : -5.0F, t * 2, alt ? -5.0f : 0.0F) + PxVec3(100, 1.0F, 0), quat);
+
+		m_psys->Add("jwall0", MyPhysX::PhysXFilter::ePLATFORM, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND, "box", d, physx::PxVec3(0),
+			side,
+			PxVec3(alt ? 0.0f : 5.0F, t * 2, alt ? 5.0f : 0.0F) + PxVec3(100, 1.0F, 0), quat);
 	}
 	///////////////////
 
@@ -261,14 +263,14 @@ bool PhysXApplication::update(float deltaTime)
 			const float density = 5.5F;
 
 			float r = glm::linearRand(3.0F, 6.0F);
-			vec3 v = vec3(-forwardVec) * 150.0F + glm::ballRand(7.0F);
+			vec3 v = vec3(-forwardVec) * 50.0F + glm::ballRand(7.0F);
 
 			m_psys->Add("Bullet",
 				MyPhysX::PhysXFilter::ePLAYER, MyPhysX::PhysXFilter::ePLAYER | MyPhysX::PhysXFilter::eGROUND,
 				"box",
-				45,
+				10,
 				physx::PxVec3(v.x, v.y, v.z),
-				physx::PxSphereGeometry(2.5F),
+				physx::PxSphereGeometry(1.0F),
 				physx::PxVec3(positionVec.x, positionVec.y, positionVec.z),
 				physx::PxQuat(glm::radians(glm::linearRand(0.0F, 360.0F)), physx::PxVec3(0, 1, 0)));
 			
@@ -279,7 +281,7 @@ bool PhysXApplication::update(float deltaTime)
 	}
 
 	//Create falling shapes
-	{
+	/*{
 		{
 			static float t = 0;
 			t += deltaTime;
@@ -326,7 +328,7 @@ bool PhysXApplication::update(float deltaTime)
 				t = 0.0F;
 			}
 		}
-	}
+	}*/
 
 	//Render our two meshes and a test point.
 	{

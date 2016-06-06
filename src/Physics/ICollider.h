@@ -20,9 +20,12 @@ namespace Physics
 		enum class Type;
 		struct IntersectInfo;
 
-	public:
+	protected:
 
 		ICollider(const Type & p_type) : m_type(p_type) {}
+
+	public:
+
 
 		inline const Type & GetType() const { return m_type; }
 

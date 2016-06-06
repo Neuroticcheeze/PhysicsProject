@@ -146,15 +146,9 @@ PhysXSystem::PhysXSystem()
 	////////////////////////////////////////
 	//=========== SET UP PHYSX ==========///
 	////////////////////////////////////////
-
-
-
-
 	physx::PxAllocatorCallback *myCallback = new MyAllocator();
-	g_PhysicsFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, *myCallback,
-		gDefaultErrorCallback);
-	g_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *g_PhysicsFoundation,
-		physx::PxTolerancesScale());
+	g_PhysicsFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, *myCallback, gDefaultErrorCallback);
+	g_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *g_PhysicsFoundation, physx::PxTolerancesScale());
 	PxInitExtensions(*g_Physics);
 	physx::PxSceneDesc sceneDesc(g_Physics->getTolerancesScale());
 	sceneDesc.gravity = physx::PxVec3(0, -9.8f, 0);
@@ -164,10 +158,6 @@ PhysXSystem::PhysXSystem()
 
 	physx::PxSimulationEventCallback* mycollisionCallBack = new PhysXObject::MyCollisionCallBack();
 	g_PhysicsScene->setSimulationEventCallback(mycollisionCallBack);
-
-
-
-
 
 	PxTolerancesScale toleranceScale;
 	toleranceScale.mass = 1000;
@@ -180,7 +170,7 @@ PhysXSystem::PhysXSystem()
 	////////////////////////////////////////
 	//===== CREATE DEFAULT MATERIAL =====///
 	////////////////////////////////////////
-	AddMaterial("default", 0.1f, 0.1f, 0.3f);
+	AddMaterial("default", 0.5F, 0.5F, 0.5F);
 
 	////////////////////////////////////////
 	//============ SET UP PVD ===========///

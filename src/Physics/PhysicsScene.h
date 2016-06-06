@@ -94,12 +94,12 @@ namespace Physics
 		void SetGravity(const vec3 &p_gravity) { m_gravity = p_gravity; }
 		const vec3 &GetGravity() const { return m_gravity;  }
 
-	protected:
+	private:
 		
 		void DetectCollisions();
 		void ResolveCollisions(float p_deltaTime);
 
-	protected:
+	private:
 
 		struct CollisionInfo
 		{
@@ -108,14 +108,13 @@ namespace Physics
 			ICollider::IntersectInfo m_intersectInfo;
 		};
 
-		std::vector<IPhysicsObject *> m_physicsObjects;
-		std::vector<ICloth *> m_cloths;
-		std::vector<IConstraint *> m_constraints;
-		std::vector<CollisionInfo> m_collisions;
+		std::vector<IPhysicsObject *>	m_physicsObjects;
+		std::vector<ICloth *>			m_cloths;
+		std::vector<IConstraint *>		m_constraints;
+		std::vector<CollisionInfo>		m_collisions;
 
 		vec3 m_gravity;
 
-	private:
 
 	};
 }
